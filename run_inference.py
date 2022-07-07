@@ -31,7 +31,7 @@ if __name__ == "__main__":
     action_type = SOFTMAX_ACT                         # type of mutation when using the network
     random_order = False
 
-    model_path = "results/me/0/binary_evol_2_assitant/10000"
+    model_path = "results/es/0/binary_evol_2_assitant/400"
     animation_path = "results/animations"
 
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
                     level[y][x] = action - 1
                     change = True
 
-                frames.append(np.pad(level.copy(),1))
+                frames.append(binary.render(level.copy()))
                 if get_number_regions(level, [1]) == 1:
                     print(f"One Region: {i}")
                     done = True
@@ -102,21 +102,6 @@ if __name__ == "__main__":
     def animate_display(i):
         im.set_data(frames[i])
         return [im]
-
-    def save_gif(filename, array, fps=10, scale=1.0):
-        # ensure that the file has the .gif extension
-        fname, _ = os.path.splitext(filename)
-        filename = fname + '.gif'
-
-        # copy into the color dimension if the images are black and white
-        if array.ndim == 3:
-            array = array[..., np.newaxis] * np.ones(3)
-            array *= 255
-
-        # make the moviepy clip
-        clip = ImageSequenceClip(list(array), fps=fps).resize(scale)
-        clip.write_gif(filename, fps=fps)
-        return clip
 
     fig = plt.figure()
     plt.axis('off')

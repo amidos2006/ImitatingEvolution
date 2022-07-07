@@ -1,6 +1,7 @@
 import numpy as np
 from .helper import get_horz_symmetry, get_longest_path, get_number_regions, get_num_actions
 from .helper import get_range_reward, get_num_tiles, discretize
+from PIL import Image
 
 def init(width, height):
     return np.random.randint(2, size=(height, width))
@@ -33,3 +34,12 @@ def behaviors(genes, actions, bins):
                                                  genes.shape[0] * genes.shape[1] / 2,\
                                                  genes.shape[0] * genes.shape[1] / 2), bins)
     return [horz_symmetry, vert_symmetry]
+
+def render(genes):
+    scale = 20
+    lvl = np.pad(genes, 1)
+    new_lvl = np.zeros(np.array(lvl.shape) * scale)
+    for j in range(lvl.shape[0]):
+        for k in range(lvl.shape[1]):
+            new_lvl[j * scale: (j+1) * scale, k * scale: (k+1) * scale] = lvl[j, k]
+    return Image.fromarray(np.uint8(new_lvl * 255))
