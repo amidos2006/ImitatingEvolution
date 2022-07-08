@@ -69,7 +69,7 @@ if __name__ == "__main__":
             all_obs = np.array(all_obs)
             if conditional:
                 values = model(torch.tensor(all_obs.reshape(-1,channels,input_size,input_size)).float(),\
-                                   torch.tensor(np.array(target).reshape(1,-1).repeats(len(all_obs), axis=0))).float())
+                                   torch.tensor(np.array(target).reshape(1,-1).repeat(len(all_obs), axis=0))).float())
             else:
                 values = model(torch.tensor(all_obs.reshape(-1,channels,input_size,input_size)).float(), None)
             values = F.softmax(values, dim=1).numpy()
