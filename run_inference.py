@@ -25,13 +25,13 @@ if __name__ == "__main__":
     fitness = binary.fitness
     behaviors = binary.behaviors
 
-    max_iterations = width * height
+    max_iterations = 10
     input_size = 8
     conditional = False
-    action_type = GREEDY_ACT                         # type of mutation when using the network
+    action_type = SOFTMAX_ACT                         # type of mutation when using the network
     random_order = False
 
-    model_path = "results/es/0/binary_evol_2_assitant/1500"
+    model_path = "results/es/0/binary_evol_2_normal/1999"
     animation_path = "results/animations"
 
 
@@ -61,28 +61,32 @@ if __name__ == "__main__":
             if random_order:
                 np.random.shuffle(tiles)
             change = False
+            all_obs = []
             for t in tiles:
                 x,y = t["x"], t["y"]
                 obs = transform_input(level, {"x":x,"y":y}, input_size, channels)
-                if conditional:
-                    values = model(torch.tensor(obs.reshape(1,channels,input_size,input_size)).float(),\
-                                   torch.tensor(np.array(target).reshape(1,-1)).float())
-                else:
-                    values = model(torch.tensor(obs.reshape(1,channels,input_size,input_size)).float(), None)
-                values = F.softmax(values, dim=1).numpy()
+                all_obs.append(obs)
+            all_obs = np.array(all_obs)
+            if conditional:
+                values = model(torch.tensor(all_obs.reshape(-1,channels,input_size,input_size)).float(),\
+                                   torch.tensor(np.array(target).reshape(1,-1).repeats(len(all_obs), axis=0))).float())
+            else:
+                values = model(torch.tensor(all_obs.reshape(-1,channels,input_size,input_size)).float(), None)
+            values = F.softmax(values, dim=1).numpy()
+            for ai,t in enumerate(tiles):
+                x,y = t["x"], t["y"]
                 if action_type == SOFTMAX_ACT:
-                    action = np.random.choice(list(range(num_tiles + 1)), p=values.flatten())
+                    action = np.random.choice(list(range(num_tiles + 1)), p=values[ai].flatten())
                 else:
-                    action = values.argmax().item()
+                    action = values[ai].argmax().item()
                 if action > 0:
                     level[y][x] = action - 1
                     change = True
-
                 frames.append(binary.render(level.copy()))
-                if get_number_regions(level, [1]) == 1:
-                    print(f"One Region: {i}")
-                    done = True
-                    break
+            if get_number_regions(level, [1]) == 1:
+                print(f"One Region: {i}")
+                done = True
+                break
             if done:
                 break
             if not change and action_type != SOFTMAX_ACT:

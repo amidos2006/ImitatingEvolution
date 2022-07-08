@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # Evolution Parameters
     start_size = 100                                  # initial number of chromosomes to start MAP-Elites
     iterations = 100000                               # number of fitness evalutations for MAP-Elites
-    mutation_length = 1                               # how many tiles to mutate
+    mutation_length = 8                               # how many tiles to mutate
     epsilon = 0.25                                    # probability of doing random mutation not from model
     periodic_save = 1000                              # how often to save
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
             evolver.update(epsilon, mutation_length)
             pbar.set_postfix_str(f"Map Size: {len(evolver)}")
             model_changed = False
-            if (allow_train and ((i > 0 and i % train_period == 0) or i == iterations-1)) or (i == iterations-1):
+            if (allow_train and i > 0 and i % train_period == 0) or (i == iterations-1):
                 if reset_model:
                     model.reset_parameters()
                 optimizer = optimizer_fn(model.parameters(), lr=learning_rate)

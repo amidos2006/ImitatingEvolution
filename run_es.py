@@ -29,10 +29,10 @@ if __name__ == "__main__":
 
     # Evolution Parameters
     pop_size = 100                                    # population size
-    death_perct = 0.5                                 # percentage of killed chromosomes
+    death_perct = 0.50                                # percentage of killed chromosomes
     tournment_size = 5                                # size of tournment in tournment selection
     gen_number = 2000                                 # number of generations
-    mutation_length = 4                               # the maximum amount of tiles to mutate
+    mutation_length = 8                               # the maximum amount of tiles to mutate
     epsilon = 0.25                                    # probability of doing random mutation not from model
     periodic_save = 20                                # how often to save
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     early_threshold = 1.0                             # threshold where a level is considered good enough when reach that level
 
     # Training Parameters
-    allow_train = True                                # allow training neural network
+    allow_train = False                               # allow training neural network
     train_period = 100                                # frequency of training the network
     train_epochs = 2                                  # number of epochs used in the middle of evolution
     batch_size = 32                                   # minibatch size during training
@@ -78,7 +78,7 @@ if __name__ == "__main__":
             evolver.update(death_perct, tournment_size, epsilon, mutation_length)
             pbar.set_postfix_str(f"Best Fitness: {evolver.get_best().fitness()}")
             model_changed = False
-            if (allow_train and ((i > 0 and i % train_period == 0) or i == gen_number-1)) or (i == gen_number-1):
+            if (allow_train and i > 0 and i % train_period == 0) or (i == gen_number-1):
                 if reset_model:
                     model.reset_parameters()
                 optimizer = optimizer_fn(model.parameters(), lr=learning_rate)

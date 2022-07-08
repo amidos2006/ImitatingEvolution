@@ -14,7 +14,8 @@ class Population:
 
     def kill(self, size):
         self._pop = sorted(self._pop, key=lambda x: x.fitness())
-        for i in range(min(size,len(self._pop))):
+        kill_size = min(size,len(self._pop))
+        for _ in range(kill_size):
             del self._pop[0]
 
     def add(self, c):

@@ -49,6 +49,8 @@ class Chromosome():
             else:
                 action = self._model.mutate(c._genes, x, y, target)
             action["behaviors"] = c.behaviors()
+            if action["action"] > 0:
+                c._genes[y][x] = action["action"] - 1
             c._actions.append(action)
         return c
 

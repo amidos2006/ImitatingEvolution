@@ -51,8 +51,6 @@ class SMNN(nn.Module):
                 value = np.random.choice(list(range(self._outputs)), p=values.flatten())
             else:
                 value = values.argmax().item()
-            if value > 0:
-                level[y][x] = value - 1
         return {"x": int(x), "y": int(y), "action": int(value)}
 
     def reset_parameters(self):
