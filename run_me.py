@@ -37,9 +37,10 @@ if __name__ == "__main__":
     # Data Creation Parameter
     window_size = 8                                   # cropped view of the observation (can be any value)
     portion = 10                                      # amount of chromosomes used to train the network
-    increase_data = 1                                 # increase data size by that value (doesn't work with EVOL_DATA)
+    increase_data = 4                                 # increase data size by that value (doesn't work with EVOL_DATA unless early_threshold < 1)
     data_creation = EVOL_DATA                         # method of creating the data
     append_data = False                               # new data is generated beside old ones
+    early_threshold = 1.0                             # threshold where a level is considered good enough when reach that level
 
     # Training Parameters
     allow_train = True                                # allow training neural network
@@ -80,11 +81,12 @@ if __name__ == "__main__":
                     model.reset_parameters()
                 optimizer = optimizer_fn(model.parameters(), lr=learning_rate)
                 loss = loss_fn()
-                if data_creation == EVOL_DATA:
+                if data_creation == EVOL_DATA and evolver.get_best().fitness() <= early_threshold:
                     increase_data = 1
                 archive = evolver.get_map()
                 levels, targets, actions = extract_data(archive.get_all(archive.keys()), window_size, model._channels,\
-                                                        data_creation, portion, behavior_bins, increase_data)
+                                                        data_creation, portion, behavior_bins, increase_data,\
+                                                        early_threshold)
                 if append_data:
                     total_levels = np.concatenate((total_levels, levels))
                     total_targets = np.concatenate((total_targets, targets))

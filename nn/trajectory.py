@@ -5,7 +5,7 @@ INIT_DATA = "init"
 INBET_DATA = "inbet"
 EVOL_DATA = "evol"
 
-def extract_data(chromosomes, size, channels, type, portion, bins, repeats):
+def extract_data(chromosomes, size, channels, type, portion, bins, repeats, early_threshold = 1.0):
     levels = []
     targets = []
     actions = []
@@ -29,18 +29,25 @@ def extract_data(chromosomes, size, channels, type, portion, bins, repeats):
                     for y in range(c._height):
                         pos.append({"x": x, "y": y})
                 np.random.shuffle(pos)
+            early_stopping = len(pos) + 1
             for ai,p in enumerate(pos):
+                early_stopping -= 1
                 cl = transform_input(level, p, size, channels)
                 levels.append(cl)
                 targets.append(np.array(c.behaviors()) / bins)
-                if type == EVOL_DATA:
-                    actions.append(c._actions[ai]["action"])
-                    if actions[-1] != 0:
-                        level[p["y"]][p["x"]] = actions[-1] - 1
-                else:
-                    if c._genes[p["y"]][p["x"]] == level[p["y"]][p["x"]]:
-                        actions.append(0)
+                if c._fitness_fn(level, c._actions) > early_threshold:
+                    early_stopping = np.random.randint(len(pos) - ai)
+                if early_stopping > 0:
+                    if type == EVOL_DATA:
+                        actions.append(c._actions[ai]["action"])
+                        if actions[-1] != 0:
+                            level[p["y"]][p["x"]] = actions[-1] - 1
                     else:
-                        actions.append(c._genes[p["y"]][p["x"]] + 1)
-                        level[p["y"]][p["x"]] = c._genes[p["y"]][p["x"]]
+                        if c._genes[p["y"]][p["x"]] == level[p["y"]][p["x"]]:
+                            actions.append(0)
+                        else:
+                            actions.append(c._genes[p["y"]][p["x"]] + 1)
+                            level[p["y"]][p["x"]] = c._genes[p["y"]][p["x"]]
+                else:
+                    actions.append(0)
     return np.array(levels), np.array(targets), np.array(actions)

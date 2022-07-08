@@ -40,6 +40,7 @@ class Chromosome():
         c = self.clone()
         c._fitness = -1
         c._behaviors = []
+        times = np.random.randint(times) + 1
         for i in range(times):
             x,y=np.random.randint(self._width), np.random.randint(self._height)
             if np.random.random() < epsilon:

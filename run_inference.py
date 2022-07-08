@@ -28,10 +28,10 @@ if __name__ == "__main__":
     max_iterations = width * height
     input_size = 8
     conditional = False
-    action_type = SOFTMAX_ACT                         # type of mutation when using the network
+    action_type = GREEDY_ACT                         # type of mutation when using the network
     random_order = False
 
-    model_path = "results/es/0/binary_evol_2_assitant/400"
+    model_path = "results/es/0/binary_evol_2_assitant/1500"
     animation_path = "results/animations"
 
 
@@ -89,8 +89,8 @@ if __name__ == "__main__":
                 print(f"Stablized: {i}")
                 break
 
-    print(f"Final Fitness: {fitness(start, [])}")
-    print(f"Final Fitness: {behaviors(start, [], behavior_bins)}")
+    print(f"Final Fitness: {fitness(level, [])}")
+    print(f"Final Fitness: {behaviors(level, [], behavior_bins)}")
 
     for i in range(20):
         frames.append(frames[-1].copy())
