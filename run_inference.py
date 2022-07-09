@@ -33,7 +33,7 @@ if __name__ == "__main__":
     action_type = SOFTMAX_ACT                         # type of mutation when using the network
     random_order = False
 
-    visualize = True
+    visualize = False
     number_times = 1
     model_path = "results/es/0/binary_evol_2_normal/1999"
     animation_path = "results/animations"
@@ -59,7 +59,6 @@ if __name__ == "__main__":
                 tiles.append({"x": x, "y": y})
 
         frames = []
-        done = False
         level = start.copy()
         with torch.no_grad():
             for i in trange(max_iterations, leave=False):
@@ -90,9 +89,6 @@ if __name__ == "__main__":
                     frames.append(binary.render(level.copy()))
                 if get_number_regions(level, [1]) == 1:
                     print(f"\n\tOne Region: {i}")
-                    done = True
-                    break
-                if done:
                     break
                 if not change and action_type != SOFTMAX_ACT:
                     print(f"\tStablized: {i}")
