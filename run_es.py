@@ -1,4 +1,5 @@
 from tqdm import trange, tqdm
+import argparse
 import numpy as np
 
 import torch
@@ -16,8 +17,13 @@ from nn.train import train
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Run Evolutionary Imitation')
+    parser.add_argument('--game', '-g', default="binary",
+                        help='the game that we need to evolve and test (default: binary)')
+    args = parser.parse_args()
+
     # game parameters
-    game_name = "binary"                              # name of the problems for saving purposes
+    game_name = args.game                             # name of the problems for saving purposes
     game_info = get_game(game_name)
     width = game_info["width"]                        # width of the generated level
     height = game_info["height"]                      # height of the generated level
