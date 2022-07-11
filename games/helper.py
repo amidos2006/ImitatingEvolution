@@ -69,6 +69,16 @@ def get_longest_path(maze, tile_values):
             final_value = max_value
     return final_value
 
+def get_distance_length(maze, start_tile, end_tile, passable_tiles):
+    start_tiles = _get_certain_tiles(maze, [start_tile])
+    end_tiles = _get_certain_tiles(maze, [end_tile])
+    if len(start_tiles) == 0 or len(end_tiles) == 0:
+        return -1
+    (sx,sy) = start_tiles[0]
+    (ex,ey) = end_tiles[0]
+    dikjstra_map, visited_map = _run_dikjstra(sx, sy, maze, passable_tiles)
+    return dikjstra_map[ey][ex]
+
 def get_horz_symmetry(maze):
     symmetry = 0
     for i in range(maze.shape[0]):

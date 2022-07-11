@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     visualize = False
     number_times = 1
-    model_path = "results/es/0/binary_evol_2_normal/1999"
+    model_path = "results/es/2/binary_evol_2_assisted/1999"
     animation_path = "results/animations"
 
     for i in range(number_times):

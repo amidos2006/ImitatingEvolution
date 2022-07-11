@@ -1,0 +1,7 @@
+{
+  "width": 5,
+  "height": 5,
+  "num_tiles": 5,
+  "num_behaviors": 2,
+  "behavior_bins": 10
+}

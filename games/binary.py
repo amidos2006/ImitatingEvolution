@@ -33,7 +33,7 @@ def behaviors(genes, actions, bins):
     empty_tiles = discretize(get_range_reward(get_num_tiles(genes, [1]),\
                                                  genes.shape[0] * genes.shape[1] / 2,\
                                                  genes.shape[0] * genes.shape[1] / 2), bins)
-    return [horz_symmetry, vert_symmetry]
+    return [horz_symmetry, longest]
 
 def render(genes):
     scale = 20

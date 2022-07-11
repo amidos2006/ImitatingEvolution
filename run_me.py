@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-import games.binary as binary
+from games import get_game
 
 from evolution.helper import random_target
 from evolution.me import SMME
@@ -17,15 +17,16 @@ from nn.train import train
 
 if __name__ == "__main__":
     # game parameters
-    problem_name = "binary"                           # name of the problems for saving purposes
-    width = 14                                        # width of the generated level
-    height = 14                                       # height of the generated level
-    num_tiles = 2                                     # number of tiles in the level
-    num_behaviors = 2                                 # number of behavior characteristic
-    behavior_bins = 20                                # number of bins after discretize
-    init = binary.init                                # initialization function for problem
-    fitness = binary.fitness                          # fitness function for the problem
-    behaviors = binary.behaviors                      # behavior characteristic function for the problem
+    game_name = "binary"                              # name of the problems for saving purposes
+    game_info = get_game(game_name)
+    width = game_info["width"]                        # width of the generated level
+    height = game_info["height"]                      # height of the generated level
+    num_tiles = game_info["num_tiles"]                # number of tiles in the level
+    num_behaviors = game_info["num_behaviors"]        # number of behavior characteristic
+    behavior_bins = game_info["behavior_bins"]        # number of bins after discretize
+    init = game_info["init"]                          # initialization function for problem
+    fitness = game_info["fitness"]                    # fitness function for the problem
+    behaviors = game_info["behaviors"]                # behavior characteristic function for the problem
 
     # Evolution Parameters
     start_size = 100                                  # initial number of chromosomes to start MAP-Elites
@@ -58,7 +59,7 @@ if __name__ == "__main__":
 
     # extra parameters
     num_experiments = 3                               # number of experiments to run
-    save_folder = f"{problem_name}_{data_creation}_{train_epochs}_{['normal','assitant'][allow_train]}"
+    save_folder = f"{game_name}_{data_creation}_{train_epochs}_{['normal','assisted'][allow_train]}"
 
     for experiment in range(num_experiments):
         if conditional:
