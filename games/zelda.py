@@ -58,14 +58,14 @@ def behaviors(genes, actions, bins):
 def render(genes):
     scale = 16
     self._graphics = [
-        Image.open(os.path.dirname(__file__) + "/zelda/solid.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/zelda/empty.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/zelda/player.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/zelda/key.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/zelda/door.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/zelda/spider.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/zelda/bat.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/zelda/scorpion.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_zelda/solid.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_zelda/empty.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_zelda/player.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_zelda/key.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_zelda/door.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_zelda/spider.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_zelda/bat.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_zelda/scorpion.png").convert('RGBA'),
     ]
     lvl = np.pad(genes, 1)
     lvl_image = Image.new("RGBA", (lvl.shape[1]*scale, lvl.shape[0]*scale), (0,0,0,255))

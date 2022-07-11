@@ -1,7 +1,7 @@
 import numpy as np
 from .helper import get_horz_symmetry, get_longest_path, get_number_regions, get_num_actions
 from .helper import get_range_reward, get_num_tiles, discretize, get_distance_length
-from .sokoban.engine import State,BFSAgent,AStarAgent
+from ._sokoban.engine import State,BFSAgent,AStarAgent
 from PIL import Image
 
 def _run_game(genes):
@@ -11,30 +11,29 @@ def _run_game(genes):
     lvlString = ""
     for i in range(lvl.shape[0]):
         for j in range(lvl.shape[1]):
-            character = gameCharacters[lvl[i][j]]
-            lvlString += character
-            if j == self._width-1:
+            lvlString += gameCharacters[lvl[i][j]]
+            if j == lvl.shape[1]-1:
                 lvlString += "\n"
-        state = State()
-        state.stringInitialize(lvlString.split("\n"))
-        aStarAgent = AStarAgent()
-        bfsAgent = BFSAgent()
-        sol,solState,iters = bfsAgent.getSolution(state, solver_power)
-        if solState.checkWin():
-            return 0, sol
-        sol,solState,iters = aStarAgent.getSolution(state, 1, solver_power)
-        if solState.checkWin():
-            return 0, sol
-        sol,solState,iters = aStarAgent.getSolution(state, 0.5, solver_power)
-        if solState.checkWin():
-            return 0, sol
-        sol,solState,iters = aStarAgent.getSolution(state, 0, solver_power)
-        if solState.checkWin():
-            return 0, sol
-        return solState.getHeuristic(), []
+    state = State()
+    state.stringInitialize(lvlString.split("\n"))
+    aStarAgent = AStarAgent()
+    bfsAgent = BFSAgent()
+    sol,solState,iters = bfsAgent.getSolution(state, solver_power)
+    if solState.checkWin():
+        return 0, len(sol)
+    sol,solState,iters = aStarAgent.getSolution(state, 1, solver_power)
+    if solState.checkWin():
+        return 0, len(sol)
+    sol,solState,iters = aStarAgent.getSolution(state, 0.5, solver_power)
+    if solState.checkWin():
+        return 0, len(sol)
+    sol,solState,iters = aStarAgent.getSolution(state, 0, solver_power)
+    if solState.checkWin():
+        return 0, len(sol)
+    return solState.getHeuristic(), 0
 
 def init(width, height):
-    return np.random.randint(8, size=(height, width))
+    return np.random.randint(5, size=(height, width))
 
 def fitness(genes, actions):
     number_player = get_num_tiles(genes, [2])
@@ -86,11 +85,11 @@ def behaviors(genes, actions, bins):
 def render(genes):
     scale = 16
     self._graphics = [
-        Image.open(os.path.dirname(__file__) + "/sokoban/solid.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/sokoban/empty.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/sokoban/player.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/sokoban/crate.png").convert('RGBA'),
-        Image.open(os.path.dirname(__file__) + "/sokoban/target.png").convert('RGBA')
+        Image.open(os.path.dirname(__file__) + "/_sokoban/solid.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_sokoban/empty.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_sokoban/player.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_sokoban/crate.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/_sokoban/target.png").convert('RGBA')
     ]
     lvl = np.pad(genes, 1)
     lvl_image = Image.new("RGBA", (lvl.shape[1]*scale, lvl.shape[0]*scale), (0,0,0,255))
