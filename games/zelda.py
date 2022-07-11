@@ -41,7 +41,7 @@ def fitness(genes, actions):
 def behaviors(genes, actions, bins):
     player_key = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
     key_door = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
-    longest = discretize(get_range_reward(player_key + key_door,\
+    sol_length = discretize(get_range_reward(player_key + key_door,\
                                             genes.shape[0] * genes.shape[1] / 2,\
                                             genes.shape[0] * genes.shape[1] / 2), bins)
     vert_symmetry = discretize(get_range_reward(get_horz_symmetry(genes.transpose()),\
@@ -53,7 +53,7 @@ def behaviors(genes, actions, bins):
     empty_tiles = discretize(get_range_reward(get_num_tiles(genes, [1]),\
                                                  genes.shape[0] * genes.shape[1] / 2,\
                                                  genes.shape[0] * genes.shape[1] / 2), bins)
-    return [longest, empty_tiles]
+    return [sol_length, empty_tiles]
 
 def render(genes):
     scale = 16

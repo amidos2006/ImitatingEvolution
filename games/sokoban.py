@@ -1,0 +1,100 @@
+import numpy as np
+from .helper import get_horz_symmetry, get_longest_path, get_number_regions, get_num_actions
+from .helper import get_range_reward, get_num_tiles, discretize, get_distance_length
+from .sokoban.engine import State,BFSAgent,AStarAgent
+from PIL import Image
+
+def _run_game(genes):
+    solver_power = 5000
+    lvl = np.pad(genes, 1)
+    gameCharacters="# @$."
+    lvlString = ""
+    for i in range(lvl.shape[0]):
+        for j in range(lvl.shape[1]):
+            character = gameCharacters[lvl[i][j]]
+            lvlString += character
+            if j == self._width-1:
+                lvlString += "\n"
+        state = State()
+        state.stringInitialize(lvlString.split("\n"))
+        aStarAgent = AStarAgent()
+        bfsAgent = BFSAgent()
+        sol,solState,iters = bfsAgent.getSolution(state, solver_power)
+        if solState.checkWin():
+            return 0, sol
+        sol,solState,iters = aStarAgent.getSolution(state, 1, solver_power)
+        if solState.checkWin():
+            return 0, sol
+        sol,solState,iters = aStarAgent.getSolution(state, 0.5, solver_power)
+        if solState.checkWin():
+            return 0, sol
+        sol,solState,iters = aStarAgent.getSolution(state, 0, solver_power)
+        if solState.checkWin():
+            return 0, sol
+        return solState.getHeuristic(), []
+
+def init(width, height):
+    return np.random.randint(8, size=(height, width))
+
+def fitness(genes, actions):
+    number_player = get_num_tiles(genes, [2])
+    player = get_range_reward(number_player, 1, 1, 1,\
+                                genes.shape[0] * genes.shape[1] / 10)
+    number_crates = get_num_tiles(genes, [3])
+    crates = get_range_reward(number_crates, 1, genes.shape[0] * genes.shape[1])
+    number_targets = get_num_tiles(genes, [4])
+    crate_target = get_range_reward(abs(number_crates - number_targets), 0, 0, 0,\
+                                genes.shape[0] * genes.shape[1] / 10)
+    stats = (player + crates + crate_target) / 3.0
+
+    added = 0
+    if number_player == 1 and number_crates > 0 and number_crates == number_targets:
+        heuristic, sol_length = _run_game(genes)
+        heuristic = get_range_reward(heuristic, 0, 0, 0,\
+                                    (genes.shape[0] + genes.shape[1]) * number_crates)
+        sol_length = get_range_reward(sol_length,\
+                                    genes.shape[0] * genes.shape[1] * number_crates,\
+                                    genes.shape[0] * genes.shape[1] * number_crates)
+        added = (heuristic + sol_length) / 2.0
+
+    action = (np.array([act["action"] for act in actions]) != 0).sum() / (len(actions) + 1.0)
+
+    return (stats + added) / 2.0 #+ action / 100.0
+
+def behaviors(genes, actions, bins):
+    number_player = get_num_tiles(genes, [2])
+    number_crates = get_num_tiles(genes, [3])
+    number_targets = get_num_tiles(genes, [4])
+    sol_length = 0
+    if number_player == 1 and number_crates > 0 and number_crates == number_targets:
+        _, sol_length = _run_game(genes)
+
+    sol_length = discretize(get_range_reward(sol_length,\
+                                            genes.shape[0] * genes.shape[1] * number_crates,\
+                                            genes.shape[0] * genes.shape[1] * number_crates), bins)
+    vert_symmetry = discretize(get_range_reward(get_horz_symmetry(genes.transpose()),\
+                                                genes.shape[0] * genes.shape[1] / 2,\
+                                                genes.shape[0] * genes.shape[1] / 2), bins)
+    horz_symmetry = discretize(get_range_reward(get_horz_symmetry(genes),\
+                                                genes.shape[0] * genes.shape[1] / 2,\
+                                                genes.shape[0] * genes.shape[1] / 2), bins)
+    empty_tiles = discretize(get_range_reward(get_num_tiles(genes, [1]),\
+                                                 genes.shape[0] * genes.shape[1] / 2,\
+                                                 genes.shape[0] * genes.shape[1] / 2), bins)
+    return [sol_length, empty_tiles]
+
+def render(genes):
+    scale = 16
+    self._graphics = [
+        Image.open(os.path.dirname(__file__) + "/sokoban/solid.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/sokoban/empty.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/sokoban/player.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/sokoban/crate.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/sokoban/target.png").convert('RGBA')
+    ]
+    lvl = np.pad(genes, 1)
+    lvl_image = Image.new("RGBA", (lvl.shape[1]*scale, lvl.shape[0]*scale), (0,0,0,255))
+    for y in range(lvl.shape[1]):
+        for x in range(lvl.shape[0]):
+            lvl_image.paste(self._graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
+    return lvl_image

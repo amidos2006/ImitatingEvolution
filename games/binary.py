@@ -36,10 +36,14 @@ def behaviors(genes, actions, bins):
     return [horz_symmetry, longest]
 
 def render(genes):
-    scale = 20
+    scale = 16
+    self._graphics = [
+        Image.open(os.path.dirname(__file__) + "/binary/solid.png").convert('RGBA'),
+        Image.open(os.path.dirname(__file__) + "/binary/empty.png").convert('RGBA')
+    ]
     lvl = np.pad(genes, 1)
-    new_lvl = np.zeros(np.array(lvl.shape) * scale)
-    for j in range(lvl.shape[0]):
-        for k in range(lvl.shape[1]):
-            new_lvl[j * scale: (j+1) * scale, k * scale: (k+1) * scale] = lvl[j, k]
-    return Image.fromarray(np.uint8(new_lvl * 255))
+    lvl_image = Image.new("RGBA", (lvl.shape[1]*scale, lvl.shape[0]*scale), (0,0,0,255))
+    for y in range(lvl.shape[1]):
+        for x in range(lvl.shape[0]):
+            lvl_image.paste(self._graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
+    return lvl_image
