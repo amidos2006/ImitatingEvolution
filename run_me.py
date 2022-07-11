@@ -16,7 +16,7 @@ from nn.train import train
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run Evolutionary Imitation')
+    parser = argparse.ArgumentParser(description='Run Evolutionary Imitation using MAP-Elites')
     parser.add_argument('--game', '-g', default="binary",
                         help='the game that we need to evolve and test (default: binary)')
     args = parser.parse_args()

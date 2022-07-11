@@ -19,8 +19,10 @@ import torch.nn.functional as F
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run inference on trained Evolutionary Imitation')
-    # parser.add_argument('model',
-    #                     help='the model that we need to use for inference')
+    parser.add_argument('model',
+                        help='the model that we need to use for inference')
+    parser.add_argument('--number', '-n', type=int, default=1,
+                        help='the number of times inference is done (default: 1)')
     parser.add_argument('--game', '-g', default="binary",
                         help='the game that we need to evolve and test (default: binary)')
     args = parser.parse_args()
@@ -46,8 +48,8 @@ if __name__ == "__main__":
     random_order = False
 
     visualize = False
-    number_times = 1
-    model_path = "results/es/2/binary_evol_2_assisted/1999"
+    number_times = args.number
+    model_path = args.model
     animation_path = "results/animations"
 
     for i in range(number_times):
@@ -59,7 +61,7 @@ if __name__ == "__main__":
         if num_tiles <= 2:
             channels = 1
 
-        model = torch.load(os.path.join(model_path, "model"))
+        model = torch.load(model_path)
         start = init(width, height)
 
         print(f"\tStart Fitness: {fitness(start, [])}")
