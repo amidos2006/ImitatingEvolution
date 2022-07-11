@@ -2,6 +2,7 @@ import numpy as np
 from .helper import get_horz_symmetry, get_longest_path, get_number_regions, get_num_actions
 from .helper import get_range_reward, get_num_tiles, discretize
 from PIL import Image
+import os
 
 def init(width, height):
     return np.random.randint(2, size=(height, width))
@@ -35,9 +36,12 @@ def behaviors(genes, actions, bins):
                                                  genes.shape[0] * genes.shape[1] / 2), bins)
     return [horz_symmetry, longest]
 
+def stopping(genes):
+    return get_number_regions(genes, [1]) == 1
+
 def render(genes):
     scale = 16
-    self._graphics = [
+    graphics = [
         Image.open(os.path.dirname(__file__) + "/_binary/solid.png").convert('RGBA'),
         Image.open(os.path.dirname(__file__) + "/_binary/empty.png").convert('RGBA')
     ]
@@ -45,5 +49,5 @@ def render(genes):
     lvl_image = Image.new("RGBA", (lvl.shape[1]*scale, lvl.shape[0]*scale), (0,0,0,255))
     for y in range(lvl.shape[1]):
         for x in range(lvl.shape[0]):
-            lvl_image.paste(self._graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
+            lvl_image.paste(graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
     return lvl_image

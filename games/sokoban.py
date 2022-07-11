@@ -3,6 +3,7 @@ from .helper import get_horz_symmetry, get_longest_path, get_number_regions, get
 from .helper import get_range_reward, get_num_tiles, discretize, get_distance_length
 from ._sokoban.engine import State,BFSAgent,AStarAgent
 from PIL import Image
+import os
 
 def _run_game(genes):
     solver_power = 5000
@@ -82,9 +83,19 @@ def behaviors(genes, actions, bins):
                                                  genes.shape[0] * genes.shape[1] / 2), bins)
     return [sol_length, empty_tiles]
 
+def stopping(genes):
+    number_player = get_num_tiles(genes, [2])
+    number_crates = get_num_tiles(genes, [3])
+    number_targets = get_num_tiles(genes, [4])
+    if number_player == 1 and number_crates > 0 and number_crates == number_targets:
+        _, sol_length = _run_game(genes)
+        if sol_length > 0:
+            return True
+    return False
+
 def render(genes):
     scale = 16
-    self._graphics = [
+    graphics = [
         Image.open(os.path.dirname(__file__) + "/_sokoban/solid.png").convert('RGBA'),
         Image.open(os.path.dirname(__file__) + "/_sokoban/empty.png").convert('RGBA'),
         Image.open(os.path.dirname(__file__) + "/_sokoban/player.png").convert('RGBA'),
@@ -95,5 +106,5 @@ def render(genes):
     lvl_image = Image.new("RGBA", (lvl.shape[1]*scale, lvl.shape[0]*scale), (0,0,0,255))
     for y in range(lvl.shape[1]):
         for x in range(lvl.shape[0]):
-            lvl_image.paste(self._graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
+            lvl_image.paste(graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
     return lvl_image

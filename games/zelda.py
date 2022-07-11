@@ -2,6 +2,7 @@ import numpy as np
 from .helper import get_horz_symmetry, get_longest_path, get_number_regions, get_num_actions
 from .helper import get_range_reward, get_num_tiles, discretize, get_distance_length
 from PIL import Image
+import os
 
 def init(width, height):
     return np.random.randint(8, size=(height, width))
@@ -55,9 +56,17 @@ def behaviors(genes, actions, bins):
                                                  genes.shape[0] * genes.shape[1] / 2), bins)
     return [sol_length, empty_tiles]
 
+def stopping(genes):
+    number_player = get_num_tiles(genes, [2])
+    number_key = get_num_tiles(genes, [3])
+    number_door = get_num_tiles(genes, [4])
+    player_key = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
+    key_door = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
+    return number_player == 1 and number_key == 1 and number_door == 1 and player_key > 0 and key_door > 0
+
 def render(genes):
     scale = 16
-    self._graphics = [
+    graphics = [
         Image.open(os.path.dirname(__file__) + "/_zelda/solid.png").convert('RGBA'),
         Image.open(os.path.dirname(__file__) + "/_zelda/empty.png").convert('RGBA'),
         Image.open(os.path.dirname(__file__) + "/_zelda/player.png").convert('RGBA'),
@@ -71,5 +80,5 @@ def render(genes):
     lvl_image = Image.new("RGBA", (lvl.shape[1]*scale, lvl.shape[0]*scale), (0,0,0,255))
     for y in range(lvl.shape[1]):
         for x in range(lvl.shape[0]):
-            lvl_image.paste(self._graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
+            lvl_image.paste(graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
     return lvl_image

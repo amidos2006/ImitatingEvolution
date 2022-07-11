@@ -2,8 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from moviepy.editor import ImageSequenceClip
 
-import games.binary as binary
-from games.helper import get_number_regions
+from games import get_game
 
 from nn.model import SOFTMAX_ACT, GREEDY_ACT, SMNN
 from nn.helper import transform_input
@@ -13,19 +12,32 @@ from tqdm import tqdm, trange
 
 import os
 import shutil
+import argparse
 
 import torch
 import torch.nn.functional as F
 
 if __name__ == "__main__":
-    width = 14
-    height = 14
-    num_tiles = 2                                     # number of tiles in the level
-    num_behaviors = 2                                 # number of behavior characteristic
-    behavior_bins = 20                                # number of bins after discretize
-    init = binary.init
-    fitness = binary.fitness
-    behaviors = binary.behaviors
+    parser = argparse.ArgumentParser(description='Run inference on trained Evolutionary Imitation')
+    # parser.add_argument('model',
+    #                     help='the model that we need to use for inference')
+    parser.add_argument('--game', '-g', default="binary",
+                        help='the game that we need to evolve and test (default: binary)')
+    args = parser.parse_args()
+
+    # game parameters
+    game_name = args.game                             # name of the problems for saving purposes
+    game_info = get_game(game_name)
+    width = game_info["width"]                        # width of the generated level
+    height = game_info["height"]                      # height of the generated level
+    num_tiles = game_info["num_tiles"]                # number of tiles in the level
+    num_behaviors = game_info["num_behaviors"]        # number of behavior characteristic
+    behavior_bins = game_info["behavior_bins"]        # number of bins after discretize
+    init = game_info["init"]                          # initialization function for problem
+    fitness = game_info["fitness"]                    # fitness function for the problem
+    behaviors = game_info["behaviors"]                # behavior characteristic function for the problem
+    stopping = game_info["stopping"]                  # stopping criteria during inference
+    render = game_info["render"]                      # render function for the level
 
     max_iterations = width * height
     input_size = 8
@@ -86,9 +98,9 @@ if __name__ == "__main__":
                     if action > 0:
                         level[y][x] = action - 1
                         change = True
-                    frames.append(binary.render(level.copy()))
-                if get_number_regions(level, [1]) == 1:
-                    print(f"\n\tOne Region: {i}")
+                    frames.append(render(level.copy()))
+                if stopping(level):
+                    print(f"\n\tFinished: {i}")
                     break
                 if not change and action_type != SOFTMAX_ACT:
                     print(f"\tStablized: {i}")

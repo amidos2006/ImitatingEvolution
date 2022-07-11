@@ -12,15 +12,18 @@ def get_game(game_name):
         result["init"] = binary.init
         result["fitness"] = binary.fitness
         result["behaviors"] = binary.behaviors
+        result["stopping"] = binary.stopping
         result["render"] = binary.render
     if game_name == "zelda":
         result["init"] = zelda.init
         result["fitness"] = zelda.fitness
         result["behaviors"] = zelda.behaviors
+        result["stopping"] = zelda.stopping
         result["render"] = zelda.render
     if game_name == "sokoban":
         result["init"] = sokoban.init
         result["fitness"] = sokoban.fitness
         result["behaviors"] = sokoban.behaviors
+        result["stopping"] = sokoban.stopping
         result["render"] = sokoban.render
     return result
