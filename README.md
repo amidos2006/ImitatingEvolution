@@ -4,7 +4,7 @@
 - [Project Description](#project-description)
 - [Run Files](#run-files)
 - [Games](#games)
-- [Evolution Methods](#evolution-methods)
+- [Evolution Methods](#evolutionary-algorithms)
 
 
 # Project Description
