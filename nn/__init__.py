@@ -18,7 +18,7 @@ def get_train_param():
         result[key] = traj[key]
     return result
 
-def save_model(model, model_path):
+def save_model(model, model_path, game_name):
     with open(os.path.join(model_path, "extra.json"), 'w') as f:
         extra_params = {}
         extra_params["conditional"] = not model._nocond
@@ -26,6 +26,7 @@ def save_model(model, model_path):
         extra_params["channels"] = model._channels
         extra_params["outputs"] = model._outputs
         extra_params["type"] = model._type
+        extra_params["game"] = game_name
         f.write(json.dumps(extra_params))
     torch.save(model, os.path.join(model_path, "model"))
 
@@ -38,4 +39,4 @@ def load_model(model_path):
         model._channels = extra_params["channels"]
         model._outputs = extra_params["outputs"]
         model._type = extra_params["type"]
-    return model
+    return model, extra_params["game"]

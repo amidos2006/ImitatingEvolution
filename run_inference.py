@@ -21,26 +21,34 @@ import torch.nn.functional as F
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run inference on trained Evolutionary Imitation')
-    parser.add_argument('model',
+    parser.add_argument('--config', '-c', default="",
+                        help='config file with all the command line args.')
+    parser.add_argument('--model', '-m', default="",
                         help='the model that we need to use for inference')
     parser.add_argument('--number', '-n', type=int, default=1,
                         help='the number of times inference is done (default: 1)')
-    parser.add_argument('--game', '-g', default="binary",
-                        help='the game that we need to evolve and test (default: binary)')
     parser.add_argument('--type', '-t', default=SOFTMAX_ACT,
                         help='the type of network during inference (values: softmax, greedy)')
-    parser.add_argument('--random', action="store_true",
-                        help='allow to do inference on tiles randomly and not scanlines')
-    parser.add_argument('--no-random', dest="random", action="store_false")
-    parser.set_defaults(train=False)
     parser.add_argument('--visualize', action="store_true",
                         help='allow to visualize inference and save in in a video file (take long time)')
     parser.add_argument('--no-visualize', dest="visualize", action="store_false")
     parser.set_defaults(visualize=False)
     args = parser.parse_args()
 
+    if len(args.config) > 0:
+        with open(args.config) as f:
+            temp = json.load(f)
+            args.model = temp["model"]
+            args.number = temp["number"]
+            args.type = temp["type"]
+            args.visualize = temp["visualize"]
+
+    if len(args.model) == 0:
+        raise FileNotFoundError(f"a model folder need to be provided either in config file or using command args.")
+
+    model, game_name = load_model(args.model)
+
     # game parameters
-    game_name = args.game                             # name of the problems for saving purposes
     game_info = get_game(game_name)
     width = game_info["width"]                        # width of the generated level
     height = game_info["height"]                      # height of the generated level
@@ -59,13 +67,11 @@ if __name__ == "__main__":
         action_type = args.type                         # type of mutation when using the network
     else:
         raise TypeError(f"{args.type} is not a possible type. Either softmax or greedy.")
-    random_order = args.random
+    random_order = False
     visualize = args.visualize
 
     number_times = args.number
     result_path = "results/inference"
-
-    model = load_model(args.model)
 
     for i in range(number_times):
         print(f"Generating {i} Level: ")

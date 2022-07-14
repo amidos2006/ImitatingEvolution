@@ -56,11 +56,57 @@ The config file contains the hyperparameters for the Mu+Lambda evolution strateg
 ## run_me.py
 This entrypoint runs a simple MAP-Elites algorithm on the binary environment. There are hyperparameters set at the top of the file (TODO move theses into a settings.yml for mass experimentation) regarding model settings, ME settings, and data creation (i.e. mutation-trajectory) settings.
 
+### How to run
+To run you can simply run the file directly
+```
+python run_me.py
+```
+This will run the evolution for 3 times so we will end up with 3 trained networks from 3 independent runs. You can change from the command line some of the settings to allow for different games and different experiments. Here a list of all the commandline arguments:
+- `--config` or `-c` specify all the upcoming parameters in a json file format.
+- `--game` or `-g` to specify which game to play [`binary`, `zelda`, `sokoban`].
+- `--observation` or `-o` to specify the percentage of the observation. Values range between (0, 2] as they are percentage of the largest dimension.
+- `--type` or `-t` specifies the type of trajectory extraction method [`evol`, `inbet`, `init`].
+- `--number` or `-n` specifies how many times to run the evolution and train a network (default: `3`).
+- `--train` or `--no-train` is a flag parameter to allow for either `assisted` or `normal` evolution (default: `--train`).
+- `--conditional` or `--no-conditional` is a flag parameter to allow for either `conditional` or `non conditional` neural network to be used during imitating evolution (default: `--no-conditional`).
+For example, if you want to train a network on game of `zelda` with full observation (`1`), using random walks for trajectory creation, and conditional network:
+```
+python run_me.py -g zelda -o 1 -t init --conditional
+```
+
+### Config File
+The config file contains the hyperparameters for the MAP-Elites algorithm. These suppose to be fixed between the different experiments. Here is a list of the hyperparameters:
+- `start_size` is the size of the starting amount of chromosomes.
+- `iterations` is the number of updates that the MAP-Elites goes through.
+- `mutation_length` is the maximum amount of tiles that can be mutated.
+- `epsilon` is the percentage of total random mutation and not derived from the trained network in case of assisted evolution.
+- `periodic_save` is the number of iterations after which the algorithm will save everything.
+
 ## run_inference.py
-This entrypoint runs trained model inferences on randomly generated binary environment maps. There are hyperparameters set at the top of the file (TODO move theses into a settings.yml for mass experimentation) regarding model and inference settings.
+This entrypoint runs trained model inferences on randomly generated environment maps. You can control what to run based on command line arguments or config file that contains these values.
+
+### How to run
+To run the inference file there is two basic ways. Either using command line argument:
+```
+python run_inference.py -m results/es/2/binary_evol_2_8_noncond_assisted/1999/
+```
+or using config file that contains all the command line args:
+```
+python run_inference.py -c config/inference/binary_100.json
+```
+The hyperparameters for the files are:
+- `--config` or `-c` is a config file that encompass all the coming parameters so if you use it, it will overwrite all the rest.
+- `--model` or `-m` is the folder for the model that need testing
+- `--number` or `-n` is the number of maps to generate during inference
+- `--type` or `-t` is the type of action taken in the network [`greedy` or `softmax`].
+- `--visualize` or `--no-visualize` is to record the inference in a mp4 file (beware it is very slow so it might take forever).
+To use trained model from previous experiment (`results/es/2/zelda_evol_2_8_noncond_assisted/1999/`) to generate `1000` maps and using `greedy` network.
+```
+python run_inference.py -m results/es/2/zelda_evol_2_8_noncond_assisted/1999/ -n 1000 -t greedy
+```
 
 # Games
-Currently there is only one game environment (and some utility functions) in this project.
+Currently there is three game environment in this project.
 
 ## Binary
 The binary game environment is a maze environment. Tiles are either passable or not. Fitness is calculated by observing connectivity and the "longest-shortest" path between any two pairs of tiles. Both of these factors contribute equally to map fitness.
@@ -74,8 +120,3 @@ There are currently 4 possible dimensions to be considered for ME in Binary:
 ## Zelda
 
 ## Sokoban
-
-# Evolution Methods
-
-## ES (mu+labmda)
-## MAP-Elites

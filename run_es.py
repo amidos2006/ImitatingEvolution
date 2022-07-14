@@ -71,7 +71,8 @@ if __name__ == "__main__":
     gen_number = evol_info["gen_number"]             # number of generations
     mutation_length = evol_info["mutation_length"]   # the maximum amount of tiles to mutate
     epsilon = evol_info["epsilon"]                   # probability of doing random mutation not from model
-    periodic_save = evol_info["periodic_save"]       # how often to save
+    periodic_save = evol_info["periodic_save"] *\
+                                        gen_number   # how often to save
 
     train_info = get_train_param()
     # Data Creation Parameter
@@ -151,4 +152,4 @@ if __name__ == "__main__":
                 os.makedirs(model_path)
                 evolver.save(os.path.join(model_path, "population"))
                 if model_changed or i == 0:
-                    save_model(model, model_path)
+                    save_model(model, model_path, game_name)

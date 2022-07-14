@@ -69,7 +69,8 @@ if __name__ == "__main__":
     iterations = evol_info["iterations"]              # number of fitness evalutations for MAP-Elites
     mutation_length = evol_info["mutation_length"]    # how many tiles to mutate
     epsilon = evol_info["epsilon"]                    # probability of doing random mutation not from model
-    periodic_save = evol_info["periodic_save"]        # how often to save
+    periodic_save = evol_info["periodic_save"] *\
+                                        iterations    # how often to save
 
     train_info = get_train_param()
     # Data Creation Parameter
@@ -151,4 +152,4 @@ if __name__ == "__main__":
                 os.makedirs(model_path)
                 evolver.save(os.path.join(model_path, "archive"))
                 if model_changed or i == 0:
-                    save_model(model, model_path)
+                    save_model(model, model_path, game_name)
