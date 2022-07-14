@@ -39,6 +39,14 @@ def behaviors(genes, actions, bins):
 def stopping(genes):
     return get_number_regions(genes, [1]) == 1
 
+def stats(genes):
+    return {
+        "longest": int(get_longest_path(genes, [1])),
+        "horz": int(get_horz_symmetry(genes)),
+        "empty": int(get_num_tiles(genes, [1])),
+        "regions": int(get_number_regions(genes, [1])),
+    }
+
 def render(genes):
     scale = 16
     graphics = [

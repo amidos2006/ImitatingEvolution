@@ -93,6 +93,21 @@ def stopping(genes):
             return True
     return False
 
+def stats(genes):
+    number_player = get_num_tiles(genes, [2])
+    number_crates = get_num_tiles(genes, [3])
+    number_targets = get_num_tiles(genes, [4])
+    sol_length = 0
+    if number_player == 1 and number_crates > 0 and number_crates == number_targets:
+        _, sol_length = _run_game(genes)
+    return {
+        "player": int(number_player),
+        "crates": int(number_crates),
+        "targets": int(number_targets),
+        "empty": int(get_num_tiles(genes, [1])),
+        "sol_length": int(sol_length),
+    }
+
 def render(genes):
     scale = 16
     graphics = [

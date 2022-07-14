@@ -64,6 +64,24 @@ def stopping(genes):
     key_door = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
     return number_player == 1 and number_key == 1 and number_door == 1 and player_key > 0 and key_door > 0
 
+def stats(genes):
+    player_key = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
+    key_door = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
+    playable = 0
+    if player_key > 0:
+        playable += 1.0
+    if key_door > 0:
+        playable += 1.0
+    playable /= 2.0
+    return {
+        "player": int(get_num_tiles(genes, [2])),
+        "key": int(get_num_tiles(genes, [3])),
+        "door": int(get_num_tiles(genes, [4])),
+        "empty": int(get_num_tiles(genes, [1])),
+        "sol_length": int(player_key + key_door),
+        "playable": float(playable)
+    }
+
 def render(genes):
     scale = 16
     graphics = [

@@ -52,6 +52,7 @@ if __name__ == "__main__":
     behaviors = game_info["behaviors"]                # behavior characteristic function for the problem
     stopping = game_info["stopping"]                  # stopping criteria during inference
     render = game_info["render"]                      # render function for the level
+    stats = game_info["stats"]                        # calculate stats of the game
 
     max_iterations = width * height
     if args.type == SOFTMAX_ACT or args.type == GREEDY_ACT:
@@ -134,8 +135,10 @@ if __name__ == "__main__":
                 "iterations": int(iterations),
                 "start_fitness": fitness(start, []),
                 "start_behaviors": behaviors(start, [], behavior_bins),
+                "start_stats": stats(start),
                 "fitness": fitness(level, []),
                 "behaviors": behaviors(level, [], behavior_bins),
+                "stats": stats(level),
             }
             f.write(json.dumps(temp))
         print(f"\tFinal Fitness: {fitness(level, [])}")
