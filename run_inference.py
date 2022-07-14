@@ -12,6 +12,7 @@ import numpy as np
 from tqdm import tqdm, trange
 
 import os
+import json
 import shutil
 import argparse
 
@@ -61,17 +62,18 @@ if __name__ == "__main__":
     visualize = args.visualize
 
     number_times = args.number
-    model_path = args.model
-    animation_path = "results/animations"
+    result_path = "results/inference"
+
+    model = load_model(args.model)
 
     for i in range(number_times):
         print(f"Generating {i} Level: ")
+
+        start = init(width, height)
+
         target = []
         for i in range(num_behaviors):
             target.append(np.random.randint(behavior_bins) / (1.0 * behavior_bins))
-
-        model = load_model(model_path)
-        start = init(width, height)
 
         print(f"\tStart Fitness: {fitness(start, [])}")
         print(f"\tStart Fitness: {behaviors(start, [], behavior_bins)}")
@@ -83,6 +85,7 @@ if __name__ == "__main__":
 
         frames = []
         level = start.copy()
+        iterations = max_iterations
         with torch.no_grad():
             for i in trange(max_iterations, leave=False):
                 if random_order:
@@ -111,15 +114,32 @@ if __name__ == "__main__":
                         change = True
                     frames.append(render(level.copy()))
                 if stopping(level):
+                    iterations = i
                     print(f"\n\tFinished: {i}")
                     break
                 if not change and action_type != SOFTMAX_ACT:
+                    iterations = i
                     print(f"\tStablized: {i}")
                     break
-
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
+        prev_results = [f for f in os.listdir(result_path) if "result" in f]
+        with open(os.path.join(result_path, f"result_{len(prev_results)}.json"), 'w') as f:
+            temp = {
+                "success": stopping(level),
+                "conditional": not model._nocond,
+                "target": [int(t * behavior_bins) for t in target],
+                "start": np.array2string(start),
+                "level": np.array2string(level),
+                "iterations": int(iterations),
+                "start_fitness": fitness(start, []),
+                "start_behaviors": behaviors(start, [], behavior_bins),
+                "fitness": fitness(level, []),
+                "behaviors": behaviors(level, [], behavior_bins),
+            }
+            f.write(json.dumps(temp))
         print(f"\tFinal Fitness: {fitness(level, [])}")
         print(f"\tFinal Fitness: {behaviors(level, [], behavior_bins)}")
-
         if visualize:
             print("\tAnimating...")
             for i in range(20):
@@ -139,13 +159,10 @@ if __name__ == "__main__":
             plt.tight_layout()
 
             anim = animation.FuncAnimation(fig, animate_display, init_func=init_display,\
-                                           frames=len(frames), interval=15, blit=True)
+                                               frames=len(frames), interval=15, blit=True)
             plt.close(anim._fig)
 
             # Call function to display the animation
-            if not os.path.exists(animation_path):
-                os.makedirs(animation_path)
-            prev_anims = [f for f in os.listdir(animation_path) if "animation" in f]
-            final_path = os.path.join(animation_path, f"animation_{len(prev_anims)}.mp4")
+            final_path = os.path.join(result_path, f"animation_{len(prev_results)}.mp4")
             anim.save(final_path)
             print(f"\tAnimation is in: {final_path}")
