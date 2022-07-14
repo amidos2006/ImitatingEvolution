@@ -18,9 +18,9 @@ We demonstrate using several game environments, including a binary maze environm
 
 # Run Files
 There are currently 3 entry points in the project:
-- run_es.py
-- run_inference.py
-- run_me.py
+- [run_es.py](#run_espy)
+- [run_inference.py](#run_inferencepy)
+- [run_me.py](#run_mepy)
 
 ## run_es.py
 This entrypoint runs a simple mu+lamda evolution strategy algorithm (check [Evolutionary Algorithms section](#evolutionary-algorithms) for more details). To run you can simply run the file directly
@@ -80,6 +80,9 @@ python run_inference.py -m results/es/2/zelda_evol_2_8_noncond_assisted/1999/ -n
 
 # Games
 Currently there is three game environment in this project.
+- [Binary](#binary)
+- [Zelda](#zelda)
+- [Sokoban](#sokoban)
 
 ## Binary
 The binary game environment is a maze environment. Tiles are either passable or not. Fitness is calculated by observing connectivity and the "longest-shortest" path between any two pairs of tiles. Both of these factors contribute equally to map fitness.
@@ -95,6 +98,9 @@ There are currently 4 possible dimensions to be considered for ME in Binary:
 ## Sokoban
 
 # Evolutionary Algorithms
+
+- [Mu+Lambda ES](#mulambda-es)
+- [MAP-Elites](#map-elites)
 
 ## Mu+Lambda ES
 
