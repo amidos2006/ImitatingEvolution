@@ -4,6 +4,7 @@ from moviepy.editor import ImageSequenceClip
 
 from games import get_game
 
+from nn import load_model
 from nn.model import SOFTMAX_ACT, GREEDY_ACT, SMNN
 from nn.helper import transform_input
 
@@ -25,6 +26,16 @@ if __name__ == "__main__":
                         help='the number of times inference is done (default: 1)')
     parser.add_argument('--game', '-g', default="binary",
                         help='the game that we need to evolve and test (default: binary)')
+    parser.add_argument('--type', '-t', default=SOFTMAX_ACT,
+                        help='the type of network during inference (values: softmax, greedy)')
+    parser.add_argument('--random', action="store_true",
+                        help='allow to do inference on tiles randomly and not scanlines')
+    parser.add_argument('--no-random', dest="random", action="store_false")
+    parser.set_defaults(train=False)
+    parser.add_argument('--visualize', action="store_true",
+                        help='allow to visualize inference and save in in a video file (take long time)')
+    parser.add_argument('--no-visualize', dest="visualize", action="store_false")
+    parser.set_defaults(visualize=False)
     args = parser.parse_args()
 
     # game parameters
@@ -42,12 +53,13 @@ if __name__ == "__main__":
     render = game_info["render"]                      # render function for the level
 
     max_iterations = width * height
-    input_size = 8
-    conditional = False
-    action_type = SOFTMAX_ACT                         # type of mutation when using the network
-    random_order = False
+    if args.type == SOFTMAX_ACT or args.type == GREEDY_ACT:
+        action_type = args.type                         # type of mutation when using the network
+    else:
+        raise TypeError(f"{args.type} is not a possible type. Either softmax or greedy.")
+    random_order = args.random
+    visualize = args.visualize
 
-    visualize = False
     number_times = args.number
     model_path = args.model
     animation_path = "results/animations"
@@ -57,11 +69,8 @@ if __name__ == "__main__":
         target = []
         for i in range(num_behaviors):
             target.append(np.random.randint(behavior_bins) / (1.0 * behavior_bins))
-        channels = num_tiles
-        if num_tiles <= 2:
-            channels = 1
 
-        model = torch.load(model_path)
+        model = load_model(model_path)
         start = init(width, height)
 
         print(f"\tStart Fitness: {fitness(start, [])}")
@@ -82,14 +91,14 @@ if __name__ == "__main__":
                 all_obs = []
                 for t in tiles:
                     x,y = t["x"], t["y"]
-                    obs = transform_input(level, {"x":x,"y":y}, input_size, channels)
+                    obs = transform_input(level, {"x":x,"y":y}, model._size, model._channels)
                     all_obs.append(obs)
                 all_obs = np.array(all_obs)
-                if conditional:
-                    values = model(torch.tensor(all_obs.reshape(-1,channels,input_size,input_size)).float(),\
+                if not model._nocond:
+                    values = model(torch.tensor(all_obs.reshape(-1,model._channels,model._size,model._size)).float(),\
                                        torch.tensor(np.array(target).reshape(1,-1).repeat(len(all_obs), axis=0)).float())
                 else:
-                    values = model(torch.tensor(all_obs.reshape(-1,channels,input_size,input_size)).float(), None)
+                    values = model(torch.tensor(all_obs.reshape(-1,model._channels,model._size,model._size)).float(), None)
                 values = F.softmax(values, dim=1).numpy()
                 for ai,t in enumerate(tiles):
                     x,y = t["x"], t["y"]

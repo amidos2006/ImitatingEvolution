@@ -1,0 +1,6 @@
+{
+  "portion": 0.1,
+  "increase_data": 4,
+  "append_data": false,
+  "early_threshold": 1.0
+}

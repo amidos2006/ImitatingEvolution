@@ -1,0 +1,9 @@
+{
+  "pop_size": 100,
+  "death_perct": 0.50,
+  "tournment_size": 5,
+  "gen_number": 2000,
+  "mutation_length": 8,
+  "epsilon": 0.25,
+  "periodic_save": 20
+}

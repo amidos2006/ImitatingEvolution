@@ -1,5 +1,6 @@
 from tqdm import trange, tqdm
 import numpy as np
+import argparse
 
 import torch
 import torch.nn as nn
@@ -7,9 +8,11 @@ import torch.optim as optim
 
 from games import get_game
 
+from evolution import get_evol_param
 from evolution.helper import random_target
 from evolution.me import SMME
 
+from nn import get_train_param, save_model
 from nn.model import SOFTMAX_ACT, GREEDY_ACT, SMNN
 from nn.trajectory import EVOL_DATA, INIT_DATA, INBET_DATA, extract_data
 from nn.train import train
@@ -19,6 +22,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run Evolutionary Imitation using MAP-Elites')
     parser.add_argument('--game', '-g', default="binary",
                         help='the game that we need to evolve and test (default: binary)')
+    parser.add_argument('--observation', '-o', type=float, default=0.5,
+                        help='the observation window size as percentage of biggest dimension (default: 0.5)')
+    parser.add_argument('--number', '-n', type=int, default=3,
+                        help='number of time to repeat the experiment (default: 3)')
+    parser.add_argument('--train', action="store_true",
+                        help='allow to train in the middle of evolution')
+    parser.add_argument('--no-train', dest="train", action="store_false")
+    parser.set_defaults(train=True)
+    parser.add_argument('--conditional', action="store_true",
+                        help='train a conditional network instead of normal one')
+    parser.add_argument('--no-conditional', dest="conditional", action="store_false")
+    parser.set_defaults(conditional=False)
+    parser.add_argument('--type', '-t', default=EVOL_DATA,
+                        help='method of creating data set for training (values: evol, init, inbet)')
     args = parser.parse_args()
 
     # game parameters
@@ -34,37 +51,45 @@ if __name__ == "__main__":
     behaviors = game_info["behaviors"]                # behavior characteristic function for the problem
 
     # Evolution Parameters
-    start_size = 100                                  # initial number of chromosomes to start MAP-Elites
-    iterations = 100000                               # number of fitness evalutations for MAP-Elites
-    mutation_length = 8                               # how many tiles to mutate
-    epsilon = 0.25                                    # probability of doing random mutation not from model
-    periodic_save = 1000                              # how often to save
+    evol_info = get_evol_param("me")
+    start_size = evol_info["start_size"]              # initial number of chromosomes to start MAP-Elites
+    iterations = evol_info["iterations"]              # number of fitness evalutations for MAP-Elites
+    mutation_length = evol_info["mutation_length"]    # how many tiles to mutate
+    epsilon = evol_info["epsilon"]                    # probability of doing random mutation not from model
+    periodic_save = evol_info["periodic_save"]        # how often to save
 
+    train_info = get_train_param()
     # Data Creation Parameter
-    window_size = 8                                   # cropped view of the observation (can be any value)
-    portion = 10                                      # amount of chromosomes used to train the network
-    increase_data = 4                                 # increase data size by that value (doesn't work with EVOL_DATA unless early_threshold < 1)
-    data_creation = EVOL_DATA                         # method of creating the data
-    append_data = False                               # new data is generated beside old ones
-    early_threshold = 1.0                             # threshold where a level is considered good enough when reach that level
+    max_size = max(width,height)
+    window_size = int(args.observation*max_size)      # cropped view of the observation (can be any value)
+    if args.type == EVOL_DATA or args.type == INBET_DATA or args.type == INIT_DATA:
+        data_creation = args.type                     # method of creating the data
+    else:
+        raise TypeError(f"{args.type} is not one of the appropriate data creation types (evol, inbet, init)")
+    portion = int(train_info["portion"] *\
+                    behavior_bins**num_behaviors)     # amount of chromosomes used to train the network
+    increase_data = train_info["increase_data"]       # increase data size by that value (doesn't work with EVOL_DATA unless early_threshold < 1)
+    append_data = train_info["append_data"]           # new data is generated beside old ones
+    early_threshold = train_info["early_threshold"]   # threshold where a level is considered good enough when reach that level
 
     # Training Parameters
-    allow_train = True                                # allow training neural network
-    train_period = 5000                               # frequency of training the network
-    train_epochs = 2                                  # number of epochs used in the middle of evolution
-    batch_size = 32                                   # minibatch size during training
-    learning_rate = 0.00001                           # optimizer learning rate
-    reset_model = True                                # reset the model weights
+    allow_train = args.train                          # allow training neural network
+    train_epochs = train_info["train_epochs"]         # number of epochs used in the middle of evolution
+    train_period = int(train_info["train_interval"]*\
+                        iterations)                   # frequency of training the network
+    batch_size = train_info["batch_size"]             # minibatch size during training
+    learning_rate = train_info["learning_rate"]       # optimizer learning rate
+    reset_model = train_info["reset_model"]           # reset the model weights
     optimizer_fn = optim.Adam                         # used optimizer
     loss_fn = nn.CrossEntropyLoss                     # used loss function
 
     # Model Parameter
-    conditional = False                               # is the model conditional or not
+    conditional = args.conditional                    # is the model conditional or not
     mutate_type = SOFTMAX_ACT                         # type of mutation when using the network
 
     # extra parameters
-    num_experiments = 3                               # number of experiments to run
-    save_folder = f"{game_name}_{data_creation}_{train_epochs}_{['normal','assisted'][allow_train]}"
+    num_experiments = args.number                     # number of experiments to run
+    save_folder = f"{game_name}_{data_creation}_{train_epochs}_{window_size}_{['noncond','cond'][conditional]}_{['normal','assisted'][allow_train]}"
 
     for experiment in range(num_experiments):
         if conditional:
@@ -113,4 +138,4 @@ if __name__ == "__main__":
                 os.makedirs(model_path)
                 evolver.save(os.path.join(model_path, "archive"))
                 if model_changed or i == 0:
-                    torch.save(model, os.path.join(model_path, "model"))
+                    save_model(model, model_path)

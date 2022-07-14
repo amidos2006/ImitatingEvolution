@@ -1,0 +1,7 @@
+{
+  "train_epochs": 2,
+  "train_interval": 0.05,
+  "batch_size": 32,
+  "learning_rate": 0.00001,
+  "reset_model": true
+}

@@ -28,7 +28,7 @@ class SMES:
             if self._target_fn == None:
                 c = c.mutate(None, epsilon, times)
             else:
-                locations = [c.behaviors() for c in self._map.get_all(self._map.keys())]
+                locations = [c.behaviors() for c in self._pop.get_all()]
                 c = c.mutate(self._target_fn(locations, self._bins, len(c.behaviors())), epsilon, times)
             self._pop.add(c)
 
@@ -37,6 +37,9 @@ class SMES:
 
     def get_best(self):
         return self._pop.get(-1)
+
+    def __len__(self):
+        return len(self._pop)
 
     def save(self, folder):
         self._pop.save(folder)

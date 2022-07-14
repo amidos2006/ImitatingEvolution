@@ -1,3 +1,6 @@
+import os
+import json
+
 import torch
 from torch import nn
 import torch.nn.functional as F
@@ -23,7 +26,7 @@ class SMNN(nn.Module):
         self._conv2 = nn.Conv2d(32, 64, 3, padding='same')
         self._max2 = nn.MaxPool2d(2)
         self._conv3 = nn.Conv2d(64, 128, 3, padding='same')
-        input_values = int(size / 4 * size / 4 * 128  + length)
+        input_values = int(max(int(size / 4),1) * max(int(size / 4),1) * 128  + length)
         self._linear1 = nn.Linear(input_values, 256)
         self._linear2 = nn.Linear(256, self._outputs)
 

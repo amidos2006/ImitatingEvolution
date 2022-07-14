@@ -32,6 +32,11 @@ class SMME:
     def get_map(self):
         return self._map.clone()
 
+    def get_best(self):
+        chromosomes = self._map.get_all(self._map.keys())
+        sorted(chromosomes, key=lambda c: c.fitness())
+        return chromosomes[-1]
+
     def __len__(self):
         return len(self._map)
 
