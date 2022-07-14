@@ -1,6 +1,7 @@
 from tqdm import trange, tqdm
 import argparse
 import numpy as np
+import json
 
 import torch
 import torch.nn as nn
@@ -20,6 +21,8 @@ from nn.train import train
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run Evolutionary Imitation using Mu+Lambda ES')
+    parser.add_argument('--config', '-c', default="",
+                        help='all the settings in a json file')
     parser.add_argument('--game', '-g', default="binary",
                         help='the game that we need to evolve and test (default: binary)')
     parser.add_argument('--observation', '-o', type=float, default=0.5,
@@ -37,6 +40,16 @@ if __name__ == "__main__":
     parser.add_argument('--type', '-t', default=EVOL_DATA,
                         help='method of creating data set for training (values: evol, init, inbet)')
     args = parser.parse_args()
+
+    if len(args.config) > 0:
+        with open(args.config) as f:
+            temp = json.load(f)
+            args.game = temp["game"]
+            args.observation = temp["observation"]
+            args.number = temp["number"]
+            args.type = temp["type"]
+            args.conditional = temp["conditional"]
+            args.train = temp["train"]
 
     # game parameters
     game_name = args.game                             # name of the problems for saving purposes

@@ -3,13 +3,13 @@ import os
 import torch
 
 def get_train_param():
-    if not os.path.exists(f"config/train.json"):
-        raise FileNotFoundError(f'config/train.json is missing.')
-    if not os.path.exists(f"config/trajectory.json"):
-        raise FileNotFoundError(f'config/trajectory.json is missing.')
-    with open(f"config/train.json") as f:
+    if not os.path.exists(f"config/train/train.json"):
+        raise FileNotFoundError(f'config/train/train.json is missing.')
+    if not os.path.exists(f"config/train/trajectory.json"):
+        raise FileNotFoundError(f'config/train/trajectory.json is missing.')
+    with open(f"config/train/train.json") as f:
         train = json.load(f)
-    with open(f"config/trajectory.json") as f:
+    with open(f"config/train/trajectory.json") as f:
         traj = json.load(f)
     result = {}
     for key in train:
