@@ -23,10 +23,7 @@ There are currently 3 entry points in the project:
 - run_me.py
 
 ## run_es.py
-This entrypoint runs a simple mu-lamda algorithm on the binary environment (more in the [Games](#games) section). The evolution strategy hyperparameters can be set in `config/evolution/es.json`. The file has command line argument to set other hyperparameters so you can easily change without need to change the settings file.
-
-### How to run
-To run you can simply run the file directly
+This entrypoint runs a simple mu+lamda evolution strategy algorithm (check [Evolutionary Algorithms section](#evolutionary-algorithms) for more details). To run you can simply run the file directly
 ```
 python run_es.py
 ```
@@ -43,21 +40,8 @@ For example, if you want to train a network on game of `zelda` with full observa
 python run_es.py -g zelda -o 1 -t init
 ```
 
-### Config File
-The config file contains the hyperparameters for the Mu+Lambda evolution strategy. These suppose to be fixed between the different experiments. Here is a list of the hyperparameters:
-- `pop_size` is the size of the population.
-- `death_perct` is the percentage of population that get killed every generation.
-- `tournment_size` is the tournament size for the tournament selection.
-- `gen_number` is the number of generations that the evolution strategy is running for.
-- `mutation_length` is the maximum amount of tiles that can be mutated.
-- `epsilon` is the percentage of total random mutation and not derived from the trained network in case of assisted evolution.
-- `periodic_save` is the number of generation after which the algorithm will save everything.
-
 ## run_me.py
-This entrypoint runs a simple MAP-Elites algorithm on the binary environment. There are hyperparameters set at the top of the file (TODO move theses into a settings.yml for mass experimentation) regarding model settings, ME settings, and data creation (i.e. mutation-trajectory) settings.
-
-### How to run
-To run you can simply run the file directly
+This entrypoint runs a simple MAP-Elites algorithm. To run you can simply run the file directly
 ```
 python run_me.py
 ```
@@ -74,19 +58,8 @@ For example, if you want to train a network on game of `zelda` with full observa
 python run_me.py -g zelda -o 1 -t init --conditional
 ```
 
-### Config File
-The config file contains the hyperparameters for the MAP-Elites algorithm. These suppose to be fixed between the different experiments. Here is a list of the hyperparameters:
-- `start_size` is the size of the starting amount of chromosomes.
-- `iterations` is the number of updates that the MAP-Elites goes through.
-- `mutation_length` is the maximum amount of tiles that can be mutated.
-- `epsilon` is the percentage of total random mutation and not derived from the trained network in case of assisted evolution.
-- `periodic_save` is the number of iterations after which the algorithm will save everything.
-
 ## run_inference.py
-This entrypoint runs trained model inferences on randomly generated environment maps. You can control what to run based on command line arguments or config file that contains these values.
-
-### How to run
-To run the inference file there is two basic ways. Either using command line argument:
+This entrypoint runs trained model inferences on randomly generated environment maps. You can control what to run based on command line arguments or config file that contains these values. To run the inference file there is two basic ways. Either using command line argument:
 ```
 python run_inference.py -m results/es/2/binary_evol_2_8_noncond_assisted/1999/
 ```
@@ -120,3 +93,25 @@ There are currently 4 possible dimensions to be considered for ME in Binary:
 ## Zelda
 
 ## Sokoban
+
+# Evolutionary Algorithms
+
+## Mu+Lambda ES
+
+The config file contains the hyperparameters for the Mu+Lambda evolution strategy. These suppose to be fixed between the different experiments. Here is a list of the hyperparameters:
+- `pop_size` is the size of the population.
+- `death_perct` is the percentage of population that get killed every generation.
+- `tournment_size` is the tournament size for the tournament selection.
+- `gen_number` is the number of generations that the evolution strategy is running for.
+- `mutation_length` is the maximum amount of tiles that can be mutated.
+- `epsilon` is the percentage of total random mutation and not derived from the trained network in case of assisted evolution.
+- `periodic_save` is the number of generation after which the algorithm will save everything.
+
+## MAP-Elites
+
+The config file contains the hyperparameters for the MAP-Elites algorithm. These suppose to be fixed between the different experiments. Here is a list of the hyperparameters:
+- `start_size` is the size of the starting amount of chromosomes.
+- `iterations` is the number of updates that the MAP-Elites goes through.
+- `mutation_length` is the maximum amount of tiles that can be mutated.
+- `epsilon` is the percentage of total random mutation and not derived from the trained network in case of assisted evolution.
+- `periodic_save` is the number of iterations after which the algorithm will save everything.
