@@ -1,20 +1,16 @@
 # Immitating Evolution
-
-# Table of Contents
-- [Project Description](#project-description)
-- [Setup](#setup)
-- [Run Files](#run-files)
-- [Games](#games)
-- [Evolutionary Algorithms](#evolutionary-algorithms)
-- [Trained Generator](#trained-generator)
-
-
-# Project Description
 This project concerns itself with a series of research projects based on the paper [Learning to Generate Levels by Imitaing Evolution](https://arxiv.org/pdf/2206.05497.pdf), available on arxiv.
 
 Search-based procedural content generation (PCG) is a well-known method used for level generation in games. Its key advantage is that it is generic and able to satisfy functional constraints. However, due to the heavy computational costs to run these algorithms online, search-based PCG is rarely utilized for real-time generation. In this repo, we introduce a new type of iterative level generator using machine learning. We train models to imitate the evolutionary process and use the model to generate levels. This trained model is able to modify noisy levels sequentially to create better levels without the need for a fitness function during inference.
 
 We demonstrate using several game environments, including a binary maze environment, how ML models can be trained to imitate mutation.
+
+# Table of Contents
+- [Setup](#setup)
+- [Run Files](#run-files)
+- [Games](#games)
+- [Evolutionary Algorithms](#evolutionary-algorithms)
+- [Trained Generator](#trained-generator)
 
 # Setup
 This project requires `pytorch` (for the neural networks), you could use `tensorflow` or any other libraries but make sure to reimplement the functions and classes inside [nn folder](https://github.com/amidos2006/ImmitatingEvolution/tree/main/nn). Beside pytorch, you need `numpy`, `Pillow` for rendering games, and `tqdm` to show progress.
