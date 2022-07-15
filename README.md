@@ -6,6 +6,7 @@
 - [Run Files](#run-files)
 - [Games](#games)
 - [Evolutionary Algorithms](#evolutionary-algorithms)
+- [Trained Generator](#trained-generator)
 
 
 # Project Description
@@ -145,3 +146,5 @@ The config file contains the hyperparameters for the MAP-Elites algorithm. These
 - `mutation_length` is the maximum amount of tiles that can be mutated.
 - `epsilon` is the percentage of total random mutation and not derived from the trained network in case of assisted evolution.
 - `periodic_save` is the number of iterations after which the algorithm will save everything.
+
+# Trained Generator
