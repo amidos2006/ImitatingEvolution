@@ -2,9 +2,10 @@
 
 # Table of Contents
 - [Project Description](#project-description)
+- [Setup](#setup)
 - [Run Files](#run-files)
 - [Games](#games)
-- [Evolution Methods](#evolutionary-algorithms)
+- [Evolutionary Algorithms](#evolutionary-algorithms)
 
 
 # Project Description
@@ -15,6 +16,12 @@ Search-based procedural content generation (PCG) is a well-known method used for
 We demonstrate using several game environments, including a binary maze environment, how ML models can be trained to imitate mutation.
 
 # Setup
+This project requires `pytorch` (for the neural networks), you could use `tensorflow` or any other libraries but make sure to reimplement the functions and classes inside [nn folder](https://github.com/amidos2006/ImmitatingEvolution/tree/main/nn). Beside pytorch, you need `numpy`, `Pillow` for rendering games, and `tqdm` to show progress.
+
+You could install all these libraries on your own or easily install them using [`requirements.txt`](https://github.com/amidos2006/ImmitatingEvolution/blob/main/requirements.txt) by:
+```
+pip install -r requirements.txt
+```
 
 # Run Files
 There are currently 3 entry points in the project:
@@ -79,10 +86,27 @@ python run_inference.py -m results/es/2/zelda_evol_2_8_noncond_assisted/1999/ -n
 ```
 
 # Games
-Currently there is three game environment in this project.
+Currently there is three game environment in this project:
 - [Binary](#binary)
 - [Zelda](#zelda)
 - [Sokoban](#sokoban)
+
+Each game provide 6 functions:
+- `init(width, height)`: return a 2D random numpy array of width, height that satisfies the specified game.
+- `fitness(level, actions)`: return the fitness function for the current level and actions taken to reach that level.
+- `behavior(level, actions, bins)`: return a numpy array of integer numbers that represents the behavior characteristic of the current input level and actions with values between [0, bins).
+- `stopping(level)`: return true if the level is satisfactory. Used mainly during inference.
+- `stats(level)`: return the characteristic of the level in form of python object.
+- `render(level)`: render the level into a Pillow Image and return it.
+
+To add more games, you need to create a new file that have all the above functions, also you will need to add a config file in [`config/games/`](https://github.com/amidos2006/ImmitatingEvolution/tree/main/config/games), and finally you will need to register the game in `get_game(game_name)` function in the [`games/__init__.py`](https://github.com/amidos2006/ImmitatingEvolution/blob/main/games/__init__.py).
+
+For the config file, you need to provide the following parameters in the file:
+- `width`: the width of the maps
+- `height`: the height of the maps
+- `num_tiles`: the number of different tiles each tile can have in the map.
+- `num_behaviors`: the number of different behaviors that behavior function returns.
+- `behavior_bins`: the number of bins that each behavior dimension have values between [0, behavior_bins).
 
 ## Binary
 The binary game environment is a maze environment. Tiles are either passable or not. Fitness is calculated by observing connectivity and the "longest-shortest" path between any two pairs of tiles. Both of these factors contribute equally to map fitness.
