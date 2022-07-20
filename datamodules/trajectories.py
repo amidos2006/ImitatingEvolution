@@ -17,17 +17,17 @@ class Trajectories(pl.LightningDataModule):
 
     def setup(self, stage=None):
         if stage == "fit" or stage is None:
-            self.data_train = TDataset()
-            self.data_train.setup(
+            self.data_train = TDataset(
                 chromosomes=self.chromosomes, 
                 size=self.size, 
                 channels=self.channels, 
                 type=self.type, 
                 portion=self.portion, 
-                bin=self.bins, 
+                bins=self.bins, 
                 repeats=self.repeats, 
                 early_threshold=self.early_threshold
             )
+            self.data_train.setup()
         elif stage == "infer":
             print("nothing here yet")
 

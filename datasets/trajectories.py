@@ -72,8 +72,8 @@ class Trajectories(Dataset):
         level = self.levels[index]
         target = self.targets[index]
         actions = self.actions[index]
-        return level, target, action
+        return level.reshape(self.channels, level.shape[0], level.shape[1]), target.reshape(self.channels, target.shape[0]), actions
 
     
     def __len__(self):
-        return len(self.raw_data)
+        return len(self.levels)

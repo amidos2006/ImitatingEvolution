@@ -1,3 +1,4 @@
+import sys
 import torch
 from torch import nn
 import torch.optim as optim
@@ -32,7 +33,9 @@ class SMNN(pl.LightningModule):
         self._lr=lr
     
     def configure_optimizers(self):
-        self._optim = getattr(optim.modules[__name__], self._optim_fn)(self.parameters(), lr=self._lr)
+        if self._optim_fn == "Adam":
+            self._optim = optim.Adam(self.parameters(), lr=self._lr)
+        # self._optim = getattr(sys.modules[optim], self._optim_fn)(self.parameters(), lr=self._lr)
 
     def forward(self, x, t):
         x = F.relu(self._max1(self._conv1(x)))
@@ -63,30 +66,32 @@ class SMNN(pl.LightningModule):
 
 
     def loss(self, x, y):
-        loss = getattr(nn.modules[__name__], self._loss_fn)()
+        if self._loss_fn == "CrossEntropy":
+            loss = nn.CrossEntropyLoss()
         return loss(x, y)
     
     
     def training_step(self, batch):
-        x, y = batch 
-        x = self.forward(x)
-        loss = self.loss(x, y)
+        x, y, actions = batch 
+        x = x.type(torch.float)
+        x = self.forward(x, actions)
+        loss = self.loss(x, actions)
 
         self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def validation_step(self, batch):
-        x, y = batch 
-        x = self.forward(x)
-        loss = self.loss(x, y)
+        x, y, actions = batch 
+        x = self.forward(x, y)
+        loss = self.loss(x, actions)
         
         self.log("val_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def test_step(self, batch):
-        x, y = batch 
-        x = self.forward(x)
-        loss = self.loss(x, y)
+        x, y, actions = batch 
+        x = self.forward(x, y)
+        loss = self.loss(x, actions)
 
         self.log("test_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss

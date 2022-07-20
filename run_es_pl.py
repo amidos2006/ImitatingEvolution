@@ -46,8 +46,8 @@ if __name__ == "__main__":
     early_threshold = 1.0                             # threshold where a level is considered good enough when reach that level
 
     # Training Parameters
-    allow_train = False                               # allow training neural network
-    train_period = 100                                # frequency of training the network
+    allow_train = True                               # allow training neural network
+    train_period = 20                                # frequency of training the network
     train_epochs = 2                                  # number of epochs used in the middle of evolution
     batch_size = 32                                   # minibatch size during training
     learning_rate = 0.00001                           # optimizer learning rate
@@ -63,7 +63,9 @@ if __name__ == "__main__":
     num_experiments = 3                               # number of experiments to run
     save_folder = f"{problem_name}_{data_creation}_{train_epochs}_{['normal','assitant'][allow_train]}"
 
-    trainer = pl.Trainer()
+    trainer = pl.Trainer(
+        max_epochs=train_epochs
+    )
     for experiment in range(num_experiments):
         if conditional:
             cond_length = num_behaviors
@@ -97,8 +99,8 @@ if __name__ == "__main__":
                     early_threshold=early_threshold
                 )
                 dm.setup()
+                train_dataset = dm.data_train
                 if append_data:
-                    train_dataset = dm.data_train
                     total_levels = np.concatenate((total_levels, train_dataset.levels))
                     total_targets = np.concatenate((total_targets, train_dataset.targets))
                     total_actions = np.concatenate((total_actions, train_dataset.actions))
