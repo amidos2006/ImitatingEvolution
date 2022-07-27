@@ -13,7 +13,7 @@ We demonstrate using several game environments, including a binary maze environm
 - [Trained Generator](#trained-generator)
 
 # Setup
-This project requires `pytorch` (for the neural networks), you could use `tensorflow` or any other libraries but make sure to reimplement the functions and classes inside [nn folder](https://github.com/amidos2006/ImmitatingEvolution/tree/main/nn). Beside pytorch, you need `numpy`, `Pillow` for rendering games, and `tqdm` to show progress.
+This project requires `torch` (for the neural networks), you could use `tensorflow` or any other libraries but make sure to reimplement the functions and classes inside [nn folder](https://github.com/amidos2006/ImmitatingEvolution/tree/main/nn). Beside `torch`, you need `numpy`, `Pillow` for rendering games, and `tqdm` to show progress.
 
 You could install all these libraries on your own or easily install them using [`requirements.txt`](https://github.com/amidos2006/ImmitatingEvolution/blob/main/requirements.txt) by:
 ```
