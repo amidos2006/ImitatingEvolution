@@ -1,11 +1,11 @@
 from tqdm import trange, tqdm
-from multiprocessing import Pool
+from multiprocessing import Pool, current_process
 from functools import partial
-
 
 import argparse
 import numpy as np
 import json
+import multiprocessing as mp
 
 import torch
 import torch.nn as nn
@@ -23,7 +23,6 @@ from nn.trajectory import EVOL_DATA, INIT_DATA, INBET_DATA, extract_data
 from nn.train import train
 
 def run_experiment(experiment, game_name, game_info, evol_info, train_info, args):
-    print(f"*** Running Experiment # {experiment}")
     # game parameters
     width = game_info["width"]                        # width of the generated level
     height = game_info["height"]                      # height of the generated level
@@ -86,7 +85,10 @@ def run_experiment(experiment, game_name, game_info, evol_info, train_info, args
     evolver = SMES(pop_size, width, height, model, init, fitness, behaviors, behavior_bins, target)
     total_levels, total_targets, total_actions = np.array([]).reshape((0,window_size,window_size)),\
                                                     np.array([]).reshape((0,num_behaviors)), np.array([]).reshape((0))
-    pbar = trange(gen_number)
+    
+    current = current_process()                                                
+    pbar = trange(gen_number, position=current._identity[0] - 1)
+    # pbar = atpbar(range(gen_number), name=mp.current_process().name)
     for i in pbar:
         evolver.update(death_perct, tournment_size, epsilon, mutation_length)
         pbar.set_postfix_str(f"Best Fitness: {evolver.get_best().fitness()}")
@@ -174,6 +176,7 @@ if __name__ == "__main__":
     if workers > 1:
         with Pool(workers) as p:
             p.map(experiment_partial, [i for i in range(num_experiments)])
+            flush()
     else:
         experiment_partial(0)
 
