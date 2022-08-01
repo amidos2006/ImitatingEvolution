@@ -119,7 +119,7 @@ if __name__ == "__main__":
                     if action > 0:
                         level[y][x] = action - 1
                         change = True
-                    frames.append(render(level.copy()))
+                frames.append(render(level.copy()))
                 if stopping(level):
                     iterations = i
                     print(f"\n\tFinished: {i}")

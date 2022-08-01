@@ -43,7 +43,7 @@ def run_experiment(experiment, game_name, game_info, evol_info, train_info, args
     epsilon = evol_info["epsilon"]                   # probability of doing random mutation not from model
     periodic_save = evol_info["periodic_save"] *\
                                         gen_number   # how often to save
-    
+
     # data creation parameters
     max_size = max(width,height)
     window_size = int(args.observation*max_size)      # cropped view of the observation (can be any value)
@@ -71,7 +71,7 @@ def run_experiment(experiment, game_name, game_info, evol_info, train_info, args
     # model parameters
     conditional = args.conditional                    # is the model conditional or not
     mutate_type = SOFTMAX_ACT                         # type of mutation when using the network
-    
+
     # extra parameters
     save_folder = f"{game_name}_{data_creation}_{train_epochs}_{window_size}_{['noncond','cond'][conditional]}_{['normal','assisted'][allow_train]}"
 
@@ -163,12 +163,12 @@ if __name__ == "__main__":
     workers = evol_info["workers"]                   # number of concurrent experiments to run
     train_info = get_train_param()
     num_experiments = args.number                     # number of experiments to run
-    
-    experiment_partial = partial(run_experiment, 
-        game_name=game_name, 
-        game_info=game_info, 
-        evol_info=evol_info, 
-        train_info=train_info, 
+
+    experiment_partial = partial(run_experiment,
+        game_name=game_name,
+        game_info=game_info,
+        evol_info=evol_info,
+        train_info=train_info,
         args=args
     )
     if workers > 1:
@@ -176,5 +176,3 @@ if __name__ == "__main__":
             p.map(experiment_partial, [i for i in range(num_experiments)])
     else:
         experiment_partial(0)
-
-    
