@@ -50,8 +50,7 @@ def run_experiment(experiment, game_name, game_info, evol_info, train_info, args
         data_creation = args.type                     # method of creating the data
     else:
         raise TypeError(f"{args.type} is not one of the appropriate data creation types (evol, inbet, init)")
-    portion = int(train_info["portion"] *\
-                    behavior_bins**num_behaviors)     # amount of chromosomes used to train the network
+    portion = int(train_info["portion"] * pop_size)   # amount of chromosomes used to train the network
     increase_data = train_info["increase_data"]       # increase data size by that value (doesn't work with EVOL_DATA unless early_threshold < 1)
     append_data = train_info["append_data"]           # new data is generated beside old ones
     early_threshold = train_info["early_threshold"]   # threshold where a level is considered good enough when reach that level
@@ -85,9 +84,12 @@ def run_experiment(experiment, game_name, game_info, evol_info, train_info, args
     evolver = SMES(pop_size, width, height, model, init, fitness, behaviors, behavior_bins, target)
     total_levels, total_targets, total_actions = np.array([]).reshape((0,window_size,window_size)),\
                                                     np.array([]).reshape((0,num_behaviors)), np.array([]).reshape((0))
-    
-    current = current_process()                                                
-    pbar = trange(gen_number, position=current._identity[0] - 1)
+
+    current = current_process()
+    if len(current._identity) == 0:
+        pbar = trange(gen_number)
+    else:
+        pbar = trange(gen_number, position=current._identity[0] - 1)
     # pbar = atpbar(range(gen_number), name=mp.current_process().name)
     for i in pbar:
         evolver.update(death_perct, tournment_size, epsilon, mutation_length)
