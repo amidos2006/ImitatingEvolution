@@ -15,6 +15,7 @@ class SMNN(nn.Module):
 
         self._nocond = length == 0
         self._size = size
+        self._nomax = size < 4
         self._channels = tiles
         if tiles <= 2:
             self._channels = 1
@@ -22,17 +23,26 @@ class SMNN(nn.Module):
         self._type = type
 
         self._conv1 = nn.Conv2d(self._channels, 32, 3, padding='same')
-        self._max1 = nn.MaxPool2d(2)
+        if not self._nomax:
+            self._max1 = nn.MaxPool2d(2)
         self._conv2 = nn.Conv2d(32, 64, 3, padding='same')
-        self._max2 = nn.MaxPool2d(2)
+        if not self._nomax:
+            self._max2 = nn.MaxPool2d(2)
         self._conv3 = nn.Conv2d(64, 128, 3, padding='same')
-        input_values = int(max(int(size / 4),1) * max(int(size / 4),1) * 128  + length)
+        divider = 4
+        if self._nomax:
+            divider = 1
+        input_values = int(max(int(size / divider),1) * max(int(size / divider),1) * 128  + length)
         self._linear1 = nn.Linear(input_values, 256)
         self._linear2 = nn.Linear(256, self._outputs)
 
     def forward(self, x, t):
-        x = F.relu(self._max1(self._conv1(x)))
-        x = F.relu(self._max2(self._conv2(x)))
+        if not self._nomax:
+            x = F.relu(self._max1(self._conv1(x)))
+            x = F.relu(self._max2(self._conv2(x)))
+        else:
+            x = F.relu(self._conv1(x))
+            x = F.relu(self._conv2(x))
         x = F.relu(self._conv3(x))
         x = x.view(x.shape[0],-1)
         if not self._nocond:
