@@ -96,7 +96,7 @@ def render(genes):
     ]
     lvl = np.pad(genes, 1)
     lvl_image = Image.new("RGBA", (lvl.shape[1]*scale, lvl.shape[0]*scale), (0,0,0,255))
-    for y in range(lvl.shape[1]):
-        for x in range(lvl.shape[0]):
+    for y in range(lvl.shape[0]):
+        for x in range(lvl.shape[1]):
             lvl_image.paste(graphics[lvl[y][x]], (x*scale, y*scale, (x+1)*scale, (y+1)*scale))
     return lvl_image
