@@ -39,6 +39,7 @@ This will run the evolution for 3 times so we will end up with 3 trained network
 - `--number` or `-n` specifies how many times to run the evolution and train a network (default: `3`).
 - `--train` or `--no-train` is a flag parameter to allow for either `assisted` or `normal` evolution (default: `--train`).
 - `--conditional` or `--no-conditional` is a flag parameter to allow for either `conditional` or `non conditional` neural network to be used during imitating evolution (default: `--no-conditional`).
+
 For example, if you want to train a network on game of `zelda` with full observation (`1`) and using random walks for trajectory creation:
 ```
 python run_es.py -g zelda -o 1 -t init
@@ -57,6 +58,7 @@ This will run the evolution for 3 times so we will end up with 3 trained network
 - `--number` or `-n` specifies how many times to run the evolution and train a network (default: `3`).
 - `--train` or `--no-train` is a flag parameter to allow for either `assisted` or `normal` evolution (default: `--train`).
 - `--conditional` or `--no-conditional` is a flag parameter to allow for either `conditional` or `non conditional` neural network to be used during imitating evolution (default: `--no-conditional`).
+
 For example, if you want to train a network on game of `zelda` with full observation (`1`), using random walks for trajectory creation, and conditional network:
 ```
 python run_me.py -g zelda -o 1 -t init --conditional
@@ -77,6 +79,7 @@ The hyperparameters for the files are:
 - `--number` or `-n` is the number of maps to generate during inference
 - `--type` or `-t` is the type of action taken in the network [`greedy` or `softmax`].
 - `--visualize` or `--no-visualize` is to record the inference in a mp4 file (beware it is very slow so it might take forever).
+
 To use trained model from previous experiment (`results/es/2/zelda_evol_2_8_noncond_assisted/1999/`) to generate `1000` maps and using `greedy` network.
 ```
 python run_inference.py -m results/es/2/zelda_evol_2_8_noncond_assisted/1999/ -n 1000 -t greedy
