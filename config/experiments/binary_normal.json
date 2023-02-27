@@ -2,7 +2,7 @@
   "game": "binary",
   "observation": 0.6,
   "type": "evol",
-  "number": 3,
+  "number": 10,
   "train": false,
   "conditional": false
 }

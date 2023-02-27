@@ -1,5 +1,5 @@
 {
-  "game": "binary",
+  "game": "sokoban",
   "observation": 0.6,
   "type": "evol",
   "number": 10,
