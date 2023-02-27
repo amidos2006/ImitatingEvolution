@@ -96,14 +96,16 @@ def get_num_actions(actions):
 def discretize(value, bins):
     return int(bins * np.clip(value,0,1)-0.00000001)
 
-def get_range_reward(value, low, high, low_slope=None, high_slope=None):
-    if low_slope == None:
-        low_slope = low
-    if high_slope == None:
-        high_slope = high
+def get_range_reward(value, low, high, min_value=None, max_value=None):
+    if min_value == None:
+        min_value = 0
+    if max_value == None:
+        max_value = 2 * high
     if value >= low and value <= high:
         return 1.0
+    if value <= min_value or value >= max_value:
+        return 0.0
     if value > high:
-        return np.clip((high_slope - (value - high)) / high_slope, 0.0, 1.0)
+        return np.clip((max_value - value) / (max_value - high + 0.00000001), 0.0, 1.0)
     if value < low:
-        return np.clip((low_slope - (low - value)) / low_slope, 0.0, 1.0)
+        return np.clip((value - min_value) / (low - min_value), 0.0, 1.0)

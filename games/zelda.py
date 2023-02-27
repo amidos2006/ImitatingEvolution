@@ -9,15 +9,18 @@ def init(width, height):
 
 def fitness(genes, actions):
     number_player = get_num_tiles(genes, [2])
-    player = get_range_reward(number_player, 1, 1, 1,\
-                                genes.shape[0] * genes.shape[1] / 10)
+    player = get_range_reward(number_player, 1, 1, 0,\
+                                genes.shape[0] * genes.shape[1])
     number_key = get_num_tiles(genes, [3])
-    key = get_range_reward(number_key, 1, 1, 1,\
-                                genes.shape[0] * genes.shape[1] / 10)
+    key = get_range_reward(number_key, 1, 1, 0,\
+                                genes.shape[0] * genes.shape[1])
     number_door = get_num_tiles(genes, [4])
-    door = get_range_reward(number_door, 1, 1, 1,\
-                                genes.shape[0] * genes.shape[1] / 10)
-    stats = (player + key + door) / 3.0
+    door = get_range_reward(number_door, 1, 1, 0,\
+                                genes.shape[0] * genes.shape[1])
+    number_enemies = get_num_tiles(genes, [5, 6, 7])
+    enemies = get_range_reward(number_enemies, 0, genes.shape[0] * genes.shape[1] / 10,\
+                               0, genes.shape[0] * genes.shape[1])
+    stats = (player + key + door + enemies) / 4.0
 
     player_key = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
     key_door = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
@@ -35,9 +38,11 @@ def fitness(genes, actions):
     action = (np.array([act["action"] for act in actions]) != 0).sum() / (len(actions) + 1.0)
 
     added = 0
-    if number_player == 1 and number_key == 1 and number_door == 1 and playable == 1:
-        added = sol_length
-    return (stats + playable + added) / 3.0 #+ action / 100.0
+    if number_player == 1 and number_key == 1 and number_door == 1:
+        added += playable
+        if playable == 1:
+            added += sol_length
+    return (stats + added) / 3.0 #+ action / 100.0
 
 def behaviors(genes, actions, bins):
     player_key = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
