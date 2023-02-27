@@ -109,3 +109,6 @@ def get_range_reward(value, low, high, min_value=None, max_value=None):
         return np.clip((max_value - value) / (max_value - high + 0.00000001), 0.0, 1.0)
     if value < low:
         return np.clip((value - min_value) / (low - min_value), 0.0, 1.0)
+
+def get_normalized_value(value, low, high):
+    return (value - low) / (high - low + 0.00000000000001)

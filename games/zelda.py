@@ -1,6 +1,6 @@
 import numpy as np
 from .helper import get_horz_symmetry, get_longest_path, get_number_regions, get_num_actions
-from .helper import get_range_reward, get_num_tiles, discretize, get_distance_length
+from .helper import get_range_reward, get_num_tiles, discretize, get_distance_length, get_normalized_value
 from PIL import Image
 import os
 
@@ -47,18 +47,14 @@ def fitness(genes, actions):
 def behaviors(genes, actions, bins):
     player_key = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
     key_door = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
-    sol_length = discretize(get_range_reward(player_key + key_door,\
-                                            genes.shape[0] * genes.shape[1] / 2,\
-                                            genes.shape[0] * genes.shape[1] / 2), bins)
-    vert_symmetry = discretize(get_range_reward(get_horz_symmetry(genes.transpose()),\
-                                                genes.shape[0] * genes.shape[1] / 2,\
-                                                genes.shape[0] * genes.shape[1] / 2), bins)
-    horz_symmetry = discretize(get_range_reward(get_horz_symmetry(genes),\
-                                                genes.shape[0] * genes.shape[1] / 2,\
-                                                genes.shape[0] * genes.shape[1] / 2), bins)
-    empty_tiles = discretize(get_range_reward(get_num_tiles(genes, [1]),\
-                                                 genes.shape[0] * genes.shape[1] / 2,\
-                                                 genes.shape[0] * genes.shape[1] / 2), bins)
+    sol_length = discretize(get_normalized_value(player_key + key_door,\
+                                                0, genes.shape[0] * genes.shape[1] / 2), bins)
+    vert_symmetry = discretize(get_normalized_value(get_horz_symmetry(genes.transpose()),\
+                                                    0, genes.shape[0] * genes.shape[1] / 2), bins)
+    horz_symmetry = discretize(get_normalized_value(get_horz_symmetry(genes),\
+                                                    0, genes.shape[0] * genes.shape[1] / 2), bins)
+    empty_tiles = discretize(get_normalized_value(get_num_tiles(genes, [1]),\
+                                                    0, genes.shape[0] * genes.shape[1] / 2), bins)
     return [sol_length, empty_tiles]
 
 def stopping(genes):

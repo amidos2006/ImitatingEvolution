@@ -1,6 +1,6 @@
 import numpy as np
 from .helper import get_horz_symmetry, get_longest_path, get_number_regions, get_num_actions
-from .helper import get_range_reward, get_num_tiles, discretize, get_distance_length
+from .helper import get_range_reward, get_num_tiles, discretize, get_distance_length, get_normalized_value
 from ._sokoban.engine import State,BFSAgent,AStarAgent
 from PIL import Image
 import os
@@ -38,10 +38,10 @@ def init(width, height):
 
 def fitness(genes, actions):
     number_player = get_num_tiles(genes, [2])
-    player = get_range_reward(number_player, 1, 1, 1,\
-                                genes.shape[0] * genes.shape[1] / 10)
+    player = get_range_reward(number_player, 1, 1, 0,\
+                                genes.shape[0] * genes.shape[1])
     number_crates = get_num_tiles(genes, [3])
-    crates = get_range_reward(number_crates, 1, genes.shape[0] * genes.shape[1])
+    crates = get_range_reward(number_crates, 2, genes.shape[0] * genes.shape[1])
     number_targets = get_num_tiles(genes, [4])
     crate_target = get_range_reward(abs(number_crates - number_targets), 0, 0, 0,\
                                 genes.shape[0] * genes.shape[1] / 10)
@@ -69,18 +69,14 @@ def behaviors(genes, actions, bins):
     if number_player == 1 and number_crates > 0 and number_crates == number_targets:
         _, sol_length = _run_game(genes)
 
-    sol_length = discretize(get_range_reward(sol_length,\
-                                            genes.shape[0] * genes.shape[1] * number_crates,\
-                                            genes.shape[0] * genes.shape[1] * number_crates), bins)
-    vert_symmetry = discretize(get_range_reward(get_horz_symmetry(genes.transpose()),\
-                                                genes.shape[0] * genes.shape[1] / 2,\
-                                                genes.shape[0] * genes.shape[1] / 2), bins)
-    horz_symmetry = discretize(get_range_reward(get_horz_symmetry(genes),\
-                                                genes.shape[0] * genes.shape[1] / 2,\
-                                                genes.shape[0] * genes.shape[1] / 2), bins)
-    empty_tiles = discretize(get_range_reward(get_num_tiles(genes, [1]),\
-                                                 genes.shape[0] * genes.shape[1] / 2,\
-                                                 genes.shape[0] * genes.shape[1] / 2), bins)
+    sol_length = discretize(get_normalized_value(sol_length,\
+                                                 0, genes.shape[0] * genes.shape[1] * number_crates), bins)
+    vert_symmetry = discretize(get_normalized_value(get_horz_symmetry(genes.transpose()),\
+                                                    0, genes.shape[0] * genes.shape[1] / 2), bins)
+    horz_symmetry = discretize(get_normalized_value(get_horz_symmetry(genes),\
+                                                    0, genes.shape[0] * genes.shape[1] / 2), bins)
+    empty_tiles = discretize(get_normalized_value(get_num_tiles(genes, [1]),\
+                                                    0, genes.shape[0] * genes.shape[1] / 2), bins)
     return [sol_length, empty_tiles]
 
 def stopping(genes):
