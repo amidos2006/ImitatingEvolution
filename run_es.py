@@ -1,6 +1,4 @@
 from tqdm import trange, tqdm
-from multiprocessing import Pool, current_process
-from functools import partial
 
 import argparse
 import numpy as np
@@ -85,12 +83,7 @@ def run_experiment(experiment, game_name, game_info, evol_info, train_info, args
     total_levels, total_targets, total_actions = np.array([]).reshape((0,window_size,window_size)),\
                                                     np.array([]).reshape((0,num_behaviors)), np.array([]).reshape((0))
 
-    current = current_process()
-    if len(current._identity) == 0:
-        pbar = trange(gen_number)
-    else:
-        pbar = trange(gen_number, position=current._identity[0] - 1)
-    # pbar = atpbar(range(gen_number), name=mp.current_process().name)
+    pbar = trange(gen_number)
     for i in pbar:
         evolver.update(death_perct, tournment_size, epsilon, mutation_length)
         pbar.set_postfix_str(f"Best Fitness: {evolver.get_best().fitness()}")
@@ -164,20 +157,13 @@ if __name__ == "__main__":
     game_name = args.game                             # name of the problems for saving purposes
     game_info = get_game(game_name)
     evol_info = get_evol_param("es")
-    workers = evol_info["workers"]                   # number of concurrent experiments to run
     train_info = get_train_param()
     num_experiments = args.number                     # number of experiments to run
 
-    experiment_partial = partial(run_experiment,
-        game_name=game_name,
-        game_info=game_info,
-        evol_info=evol_info,
-        train_info=train_info,
-        args=args
-    )
-    if workers > 1:
-        with Pool(workers) as p:
-            p.map(experiment_partial, [i for i in range(num_experiments)])
-            flush()
-    else:
-        experiment_partial(0)
+    for exp in range(num_experiments):
+        run_experiment(exp,
+            game_name=game_name,
+            game_info=game_info,
+            evol_info=evol_info,
+            train_info=train_info,
+            args=args)
