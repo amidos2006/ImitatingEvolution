@@ -6,7 +6,7 @@ from PIL import Image
 import os
 
 def _run_game(genes):
-    solver_power = 5000
+    solver_power = 1000
     lvl = np.pad(genes, 1)
     gameCharacters="# @$."
     lvlString = ""
