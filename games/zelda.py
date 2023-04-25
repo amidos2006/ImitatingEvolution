@@ -22,13 +22,10 @@ def fitness(genes, actions):
                                0, genes.shape[0] * genes.shape[1])
     stats = (player + key + door + enemies) / 4.0
 
-    player_key = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
-    key_door = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
-    playable = 0
-    if player_key > 0:
-        playable += 1.0
-    if key_door > 0:
-        playable += 1.0
+    player_key, player_key_value = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])    
+    key_door, key_door_value = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
+    temp = np.prod(genes.shape)
+    playable = 2.0 - player_key_value / temp - key_door_value / temp 
     playable /= 2.0
 
     sol_length = get_range_reward(player_key + key_door,\
@@ -45,8 +42,8 @@ def fitness(genes, actions):
     return (stats + added) / 3.0 #+ action / 100.0
 
 def behaviors(genes, actions, bins):
-    player_key = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
-    key_door = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
+    player_key, _ = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])
+    key_door, _ = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
     sol_length = discretize(get_normalized_value(player_key + key_door,\
                                                 0, genes.shape[0] * genes.shape[1] / 2), bins)
     vert_symmetry = discretize(get_normalized_value(get_horz_symmetry(genes.transpose()),\
