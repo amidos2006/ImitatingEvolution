@@ -24,10 +24,7 @@ def fitness(genes, actions):
 
     player_key, player_key_value = get_distance_length(genes, [2], [3], [1, 2, 3, 5, 6, 7])    
     key_door, key_door_value = get_distance_length(genes, [3], [4], [1, 2, 3, 4, 5, 6, 7])
-    temp = np.prod(genes.shape)
-    playable = 2.0 - player_key_value / temp - key_door_value / temp 
-    playable /= 2.0
-
+    playable = (2.0 - player_key_value - key_door_value) / 2.0
     sol_length = get_range_reward(player_key + key_door,\
                                     genes.shape[0] * genes.shape[1] / 2,\
                                     genes.shape[0] * genes.shape[1] / 2)

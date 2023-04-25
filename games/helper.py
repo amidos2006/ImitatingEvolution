@@ -73,17 +73,29 @@ def get_distance_length(maze, start_tile, end_tile, passable_tiles):
     start_tiles = _get_certain_tiles(maze, [start_tile])
     end_tiles = _get_certain_tiles(maze, [end_tile])
     if len(start_tiles) == 0 or len(end_tiles) == 0:
-        return -1, np.prod(maze.shape)
+        return -1, 1
     (sx,sy) = start_tiles[0]
     (ex,ey) = end_tiles[0]
     dikjstra_map, _ = _run_dikjstra(sx, sy, maze, passable_tiles)
     value = 0
     if dikjstra_map[ey][ex] < 0:
-        temp_map, _ = _run_dikjstra(ex, ey, maze, passable_tiles)
-        temp_1 = dikjstra_map >= 0
-        temp_2 = temp_map >= 0
-        value = np.sum(temp_1 != temp_2)
-    return dikjstra_map[ey][ex], value
+        value = abs(sx - ex) + abs(sy - ey)
+        temp_queue = [(ex,ey)]
+        temp_visit = np.zeros(maze.shape)
+        while len(temp_queue) > 0:
+            (cx,cy) = temp_queue.pop(0)
+            if temp_visit[cy][cx] > 0:
+                continue
+            temp_visit[cy][cx] = 1
+            if dikjstra_map[cy][cx] >= 0:
+                value = abs(cx - ex) + abs(cy - ey)
+                break
+            for (dx,dy) in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nx,ny=cx+dx,cy+dy
+                if nx < 0 or ny < 0 or nx >= len(maze[0]) or ny >= len(maze):
+                    continue
+                temp_queue.append((nx, ny))
+    return dikjstra_map[ey][ex], value / (abs(sx - ex) + abs(sy - ey))
 
 def get_horz_symmetry(maze):
     symmetry = 0
