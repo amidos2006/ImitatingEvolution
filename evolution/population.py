@@ -1,5 +1,6 @@
 import numpy as np
 import os
+from .chromosome import Chromosome
 
 class Population:
     def __init__(self, size):
@@ -54,10 +55,10 @@ class Population:
         for i in range(len(self._pop)):
             self.get(i).save(os.path.join(folder, f"{i}.json"))
 
-    def load(self, folder, width, height, init, mutate, fitness, behaviors):
+    def load(self, folder, width, height, model, init, fitness, behaviors, bins):
         self._pop = []
         files = [fn for fn in os.listdir(folder) if ".json" in fn]
         for fn in files:
-            c = Chromosome(width, height, init, mutate, fitness, behaviors)
+            c = Chromosome(width, height, model, init, fitness, behaviors, bins)
             c.load(os.path.join(folder, fn))
             self._pop.append(c)

@@ -3,7 +3,6 @@ from tqdm import trange, tqdm
 import argparse
 import numpy as np
 import json
-import multiprocessing as mp
 
 import torch
 import torch.nn as nn

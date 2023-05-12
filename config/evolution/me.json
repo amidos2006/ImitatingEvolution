@@ -3,6 +3,5 @@
   "iterations": 100000,
   "mutation_length": 8,
   "epsilon": 0.25,
-  "periodic_save": 0.01,
-  "workers": 5
+  "periodic_save": 0.01
 }
